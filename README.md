@@ -1,2 +1,4 @@
 # C_Study
-#This Project for my C/C++ study
+This Project is a record for my C/C++ study
+
+
