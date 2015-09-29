@@ -1,4 +1,5 @@
 Created Date:2015-09-26
+看来需要考虑一下不同编码之间换行的问题了
 [TOC]
 
 #代码版本管理工具
@@ -39,6 +40,20 @@ git clone git://github.com/schacon/grit.git mygitname
 使用`git log -2`来查看最近两条记录
 使用`git log -p`来查看每次提交之间的差异
 
+
+###git撤销
+`git commit --amend
+**需要注意**的是，撤销操作是不可逆的，进行这个操作要格外小心
+
+
+###添加一个远程仓库
+添加一个远程仓库并可以为该远程仓库起一个别名
+`git remote add `
+`git remote add newName https://github.com/SamsonWang/repoName.git`
+
+###标签
+给某一个版本的代码打标签
+`git tag` 查看现有标签
 
 
 
