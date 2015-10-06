@@ -8,6 +8,7 @@
 #include <typeinfo>
 using namespace std;
 
+
 template<typename T>
 void foo(T const& x,T const& y){
 	cout << typeid(x).name() << ' '
@@ -19,7 +20,6 @@ void bar(T x,T y){
 	cout << typeid(x).name() << ' '
 		<< typeid(y).name() << endl;
 }
-
 
 template<typename A,typename B, typename C>
 A hum(C arg){
@@ -44,7 +44,6 @@ int main(){
 //	foo ("hello","STL"); //编译错误
 	hum<char,short,int>(10); //c s i
 	hum<char,short>(10);    //c s i
-
 
 
 

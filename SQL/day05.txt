@@ -1,0 +1,298 @@
+
+on delete set null
+
+PL/SQL-procedual language
+
+优点：
+结构化模块化编程
+良好的可移植性
+良好的可维护性
+提升系统性能
+
+缺点：
+不便于向异构数据库移植应用程序
+DB2不识别PL/SQL
+
+PL/SQL对大小写不敏感
+
+begin
+    dbms_output.put_line('hello plsql');
+end;
+
+dbms_output是关闭的，需要打开才能看到输出效果
+set serveroutput on
+
+DECLARE
+--申明区
+BEGIN
+--执行区
+EXECPTION
+--异常区
+END；
+
+变量的定义和赋值：
+ 变量名 变量类型 := 值;
+
+变量的申明放在申明区，但赋值可以在任何位置。
+declare
+ var_i number:=10;
+begin
+ var_i:=1;
+ dbms_output.put_line(var_i);
+end;
+
+constant 代表常量
+not null 代表不能为空
+变量不赋值时，默认为空值  
+
+变量的类型：
+1标量型
+ 数字 -- number binary_integer
+ 字符串 -- char(n) varchar2(n)
+ 布尔 -- boolen
+ 日期 -- date
+2组合类型
+ 记录 -- record
+ 表 -- table
+ 游标
+3引用类型
+ ref cursor(参考类型) 
+4大类型
+ blob clob bfile
+ 
+ %type 可以让变量类型和某个表的某个字段一样
+ v_id s_emp.id%type -- 和s_emp的id字段类型一样
+ 查询s_emp中id为1的员工的last_name和薪水，放入变量。
+declare 
+ v_lname varchar2(25);
+ v_salary number(11,2);
+begin
+ select last_name,salary
+ into v_lname,v_salary
+ from s_emp
+ where id=1;
+ dbms_output.put_line(v_lname||','||v_salary);
+end;
+ 
+declare
+ v_name s_emp.last_name%type;
+ v_sal s_emp.salary%type;
+begin
+ select last_name,salary
+ into v_name,v_sal
+ from s_emp where id=2;
+ dbms_output.put_line(v_name||','||v_sal);
+end;
+ 
+record类似c语言的结构体，可以把很多变量放在一起
+格式：
+type 记录名 is record(
+ 变量名
+);
+变量名 记录名; -- 定义该类型的变量
+
+declare
+ type emprecord is record(
+  name s_emp.last_name%type,
+  sal s_emp.salary%type
+ );
+ v_emp emprecord; -- 定义record变量
+begin
+ select last_name,salary
+ into v_emp
+ from s_emp where id=3;
+ dbms_output.put_line(v_emp.name||','||v_emp.sal);
+end;
+
+
+在select into record时，select后面的字段数量和record的成员数量必须一样，可以制定record的具体成员。
+record类型的变量支持相互赋值
+
+declare
+ type emprecord is record(
+  name s_emp.last_name%type,
+  sal s_emp.salary%type
+ );
+ v_emp emprecord; -- 定义record变量
+ v_emp2 emprecord;
+begin
+ select last_name,salary
+ into v_emp
+ from s_emp where id=3;
+ v_emp2:=v_emp;
+ dbms_output.put_line(v_emp2.name||','||v_emp2.sal);
+end;
+
+%rowtype -- 类似 record,对应某个表全部字段的类型
+s_emp%rowtype -- s_emp的全部字段，成员名就是字段名
+
+%rowtype和record的对比
+1 %rowtype编码简单，record需要字节写
+2 %rowtype只能代表所有字段，不能代表部分。record则可以自定义
+3 在使用上没有区别
+
+
+declare
+ v_emp s_emp%rowtype;
+begin
+ select * into v_emp from s_emp where id=1;
+ dbms_output.put_line(v_emp.last_name||','||v_emp.salary);
+end;
+
+declare
+ v_emp s_emp%rowtype;
+begin
+ select last_name,salary into v_emp.last_name,v_emp.salary
+ from s_emp where id=1;
+ dbms_output.put_line(v_emp.last_name||','||v_emp.salary);
+end;
+
+MAP映射(一种数据结构)
+table与map<int,_t>
+定义table时，以一个int做key，数据做value，table中，key的次序是不连续的，只能使用first/next/last进行遍历查询
+key没有必要是顺序的，可以用first，last，next方法解决遍历
+
+定义格式
+type table类型名 is table of 元素类型
+ index by binary_integer;
+ 
+定义table类型的变量
+ 变量名 table类型名
+ 
+declare
+ type numtable is table of s_emp.id%type
+ index by binary_integer;
+ v_num numtable; -- 定义该类型的变量
+begin
+ v_num(0):=5;
+ v_num(5):=20;
+ v_num(-8):=30;
+ dbms_output.put_line('v_num(5)='||v_num(5));
+ dbms_output.put_line('v_num(f)='||v_num(v_num.first));
+ dbms_output.put_line('v_num(4)='||v_num(4));
+end;
+
+
+由于index不连续，table提供了first/next/last完成对table中元素的index
+first() -- 返回第一个元都的index
+next(ind) -- 返回ind的下一个元素的index
+last() -- 返回最后一个元素的index
+
+
+declare
+ type numtable is table of s_emp.id%type
+ index by binary_integer;
+ v_num numtable; -- 定义该类型的变量
+ v_ind binary_integer;
+begin
+ v_num(0):=5;
+ v_num(5):=20;
+ v_num(-8):=30;
+ v_num(10):=40;
+ v_ind:=v_num.first(); --  -8
+ dbms_output.put_line('v_ind='||v_ind);
+ dbms_output.put_line('first='||v_num(v_ind));
+ v_ind:=v_num.next(v_ind);
+ dbms_output.put_line('v_ind='||v_ind);
+end;
+
+
+练习，把id是1,3,9的员工的左右信息仿如一个table类型的变量中，
+再使用迭代的思想(first/next/last)，输出员工的id,last_name,salary
+
+
+declare
+ type emptable is table of s_emp%rowtype
+ index by binary_integer;
+ v_emp emptable; -- 定义该类型的变量
+ v_ind binary_integer;
+begin
+ select * into v_emp(0) from s_emp where id=1;
+ select * into v_emp(1) from s_emp where id=3;
+ select * into v_emp(2) from s_emp where id=9;
+ v_ind:=v_emp.first(); 
+ dbms_output.put_line('v_ind='||v_ind);
+ dbms_output.put_line('id='||v_emp(v_ind).id||','||v_emp(v_ind).last_name||','||v_emp(v_ind).salary);
+ v_ind:=v_emp.next(v_ind);
+ dbms_output.put_line('id='||v_emp(v_ind).id||','||v_emp(v_ind).last_name||','||v_emp(v_ind).salary);
+ v_ind:=v_emp.next(v_ind);
+ dbms_output.put_line('id='||v_emp(v_ind).id||','||v_emp(v_ind).last_name||','||v_emp(v_ind).salary);
+end;
+
+
+PL/SQL控制语句
+条件语句
+if bool表达式 then ...
+elsif bool表达式 then ...
+else ...
+endif
+bool表达式如果为空值null,则认为是false
+
+declare
+ v_x number;
+ v_y number;
+begin
+ v_x:=1;
+ if v_x>v_y 
+  then dbms_output.put_line('x>y');
+ elsif v_x=v_y
+  then dbms_output.put_line('x=y');
+ elsif v_x<v_y
+  then dbms_output.put_line('x<y');
+ elsif v_x is null and v_y is null
+  then dbms_output.put_line('null');
+ else dbms_output.put_line('error'); -- 只赋值一个会打印error
+ end if;
+end;
+
+循环语句，包括3种--loop/while/for
+
+loop -- 简单循环
+ ...;
+ exit when 退出条件; 
+ ...;
+end loop;
+如果没有写exit when，也没有退出条件，就是死循环
+
+declare
+ v_num number;
+begin
+ v_num:=1;
+ loop
+  exit when v_num = 11;
+  dbms_output.put_line(v_num||' ');
+  v_num:=v_num+1;
+ end loop;
+end;
+
+while 循环的条件 loop --while循环
+ ...
+end loop;
+
+declare
+ v_num number;
+begin
+ v_num:=1;
+ while v_num<11 loop
+  -- exit when v_num = 11;
+  dbms_output.put_line(v_num);
+  v_num:=v_num+1;
+ end loop;
+end;
+
+for loop_counter in 初始值..高值 loop -- for循环智能循环
+ ...;
+end loop;
+
+begin
+ for v_num in 1..10 loop
+  dbms_output.put_line(v_num||' ');
+ end loop;
+end;
+
+PL/SQL中，可以定义标签，标签可以和循环goto结合使用。
+标签格式：<< 标签名字 >> 可以goto 标签名和exit 标签名
+
+
+
+

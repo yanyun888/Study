@@ -1,0 +1,154 @@
+
+数据库和编程类的语言没有关系，是独立的一个学科
+每种编程类的语言都有操作数据库的技术，比如：
+
+C语言 - Pro*c
+C++   - 比较多样，windows中常用ADO
+Java  - JDBC
+
+数据库是数据的仓库，用于存取数据。
+
+数据库的操作主要包括：增删改查
+
+数据库的操作(不考虑编程语言)使用SQL(结构化查询语),包括数据的增删改查和数据库对象的搭建(比如表)。
+
+SQL语句的分类：
+ Select查询语句
+ DML语句(数据操作语句，包括增删改)manipulate
+ 事务处理语句(commit/rollback) Transaction control
+ DDL语句(数据定义语句)
+ DCL语句(数据控制语句，比如权限管理)
+
+数据库一般都有专门的管理人员，叫DBA，数据库的管理不是程序员的职责，是DBA的事情。
+
+
+存取数据可以用数据结构、文件和数据库，区别：
+1,数据结构是内存中的，程序运行必备(CPU直接操作)，但没有持久保存的能力，关机就没了。
+2,文件是硬盘中的，能持久保存数据；但不能直接被程序操作，必须读如内存中(一般是数据结构)，是轻量
+	级的存取方式。
+3,数据库是硬盘中的，能持久保存数据；但不能直接被程序操作，必须读如内存中(一般是数据结构)，是重
+	量级的存取方式
+
+表是存取数据的基本单位，数据的增删改查发生在表中。
+
+表(table)就是整体，包括字段(column)和记录(record)，字段就是每一列，记录就是每一行数据。
+
+常见的数据库
+数据库的种类非常的多，很多公司都有自己的数据库产品
+Oracle     --  Oracle
+IBM        --  DB2
+Microsoft  --  SQL Server
+Mysql免费数据库
+
+超大型的数据库是有Oracle和DB2
+
+Oracle数据库在网络中，登陆方式：
+1. telnet 数据库的ip地址
+2. 输入登陆的用户名和密码
+3. sqlplus 进入数据库的执行平台
+4. 输入数据库的用户名和密码
+
+进入sqlplus平台以后就可以执行SQL语句
+Desc 表名 - 显示出表中所有的字段信息
+select * from 表名 - 查询表中所有的记录
+Sql语句自身是不包括结束符号，但是想要在Sqlplus中执行，需要用；表示结束。
+
+172.30.17.160
+
+172.30.13.10/172.30.13.20
+oracle
+sqlplus的用户名和密码：openlab，open123
+
+
+s_emp - 员工表
+s_dept - 部门表
+
+NUMBER(11,2)
+
+oracle 最大支持4个G，可以存放电影或图片
+
+number - 数值型，包括整数和小数
+	number(n) - 最大长度是n的整数
+	number(n,m) - 最大长度是n的小数，其中小数部分m
+字符型 - char varchar2
+	char(n) - 长度是n的字符串(定长字符串)
+	varchar2(n) - 最大长度是n的字符串(变长字符串)
+	char类型 不足长度的部分补空格
+date - 日期型
+	包括7个组成部分：世纪 年 月 日 小时 分 秒
+
+sql 大小写是不区分大小写(windos 不区分大小写)，但是但引号和双引号中除外
+
+1.select from查询语句的语法
+select 想要查询的字段/表达式 
+from 用户名.表名;
+一般用户名会省略
+* 代表所有字段都查询
+多个字段用逗号隔开
+select id,last_name,salary from s_emp;
+select id,last_name,date from s_emp;
+
+为了显示更加清晰，表达式或字段可以用别名。
+select id,last_name,salary "year salary" from s_emp;
+select id,salary,commission_pct from s_emp;
+
+空值就是没有存入对应的数据，支持所有的字段类型，只要有空值参与的数学运算结果均为空值；
+select id,last_name,salary*(1+nvl(commission_pct,0)/100) total from s_emp;
+
+nvl函数，用于解决空值的问题。
+nvl(空值字段，如果为空的转换值);
+
+
+select distinct salary from s_emp;
+过滤都重复的字段
+
+文本型就是字符串，字面值用''括起来，单引号是区分大小写。
+日期类型的值也必须用''括起来，
+
+select last_name||' '||first_name||':'||salary||' '||start_date name from s_emp;
+
+条件查询语句
+select .. from .. where;
+
+select id,last_name,salary from s_emp where salary>1400 AND salary<10000;
+不等号的 两种写法 != 
+select id,last_name,first_name,salary from s_emp where last_name='Smith';
+
+select id,last_name,salary from s_emp where last_name like '%n%';
+select id,last_name,salary from s_emp where last_name like '_N%';
+
+条件查询中常见的运算符：
+1.比较运算符号： > < = >= <=   != <>
+2.SQL专用运算符
+between ... and ... 在两个值之间
+in (1,2,3) 在()中的某一个值
+like - 定义某种匹配格式
+is NULL - 判断空， =NULL 判断不了空值;
+3 逻辑运算符号
+and 与 
+or 或
+not 非
+其中，and的优先级高一些，所以用or时最好加()
+
+select id,last_name,salary from s_emp where salary between 1100 and 1400;
+between A and B; 就是在A和B之间的值，包括A和B，
+A和B的值应为A小B大，如果A大B小不出错(报错)，但没有查询结果。
+
+select id,last_name,salary from s_emp where salary between 1100 and 1400 order by salary;
+select salary,last_name,id from s_emp where salary between 1100 and 1400 order by salary;
+select id,last_name,dept_id from s_emp where dept_id in (41,42);
+select id,last_name,dept_id from s_emp where dept_id not in (41,42);
+
+not in 的效率不高，数据量大的时候慎用
+
+模糊查询
+like '_或%或数据'
+其中，_代表一个字符，%代表0~n个字符
+like '%a%'
+like '_a_'
+
+多个查询条件用and和or连接，and代表并且关系，or代表或者关系。
+
+select id,last_name,salary,dept_id from s_emp where dept_id=41 and salary>1100;
+
+

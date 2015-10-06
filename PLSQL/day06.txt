@@ -1,0 +1,296 @@
+
+郭爱军
+
+DML(insert/delete/update)
+TCL(commit rollback)
+DDL(create table/drop table/alter table)
+
+DDL不能直接在plsql中使用，需要使用动态sql
+
+
+declare
+ var_name s_emp.first_name%type;
+begin
+ select first_name into var_name from s_emp
+  where id=3;
+ update s_emp set first_name='mengge'
+  where id=3;
+ commit;
+ select first_name into var_name from s_emp
+  where id=3;
+ dbms_output.put_line('name='||var_name);
+end;
+
+
+动态sql
+概念：在程序执行的过程中，sql可以根据条件发生改变，
+
+解决DDL在PL/SQL的使用问题
+
+把sql变成字符串即可
+使用execute immediate sqlstr 可以把一个字符串当sql语句执行；
+
+declare
+ sqlstr varchar2(100);
+begin 
+ sqlstr:='create table test1506_wzl(id number)';
+ sqlstr:=substr(sqlstr,1,length(sqlstr)-1);
+ sqlstr:=sqlstr||','||'name varchar2(30))';
+ dbms_output.put_line(sqlstr);
+ execute immediate sqlstr;
+end;
+
+
+DML的动态sql
+
+declare
+ sqlstr varchar2(100);
+begin
+ sqlstr := 'insert into s_dept values(100,''test100'',NULL)';
+ dbms_output.put_line(sqlstr);
+end;
+
+为了解决字符串的拼接问题，使用占位符结合using
+
+declare
+ sqlstr varchar2(100);
+ id number:=201;
+ name varchar2(30):='test200';
+ rid number:=1;
+begin
+ sqlstr := 'insert into s_dept values(:b0,:b1,:b2)';
+ execute immediate sqlstr using id,name,rid;
+ commit;
+end;
+
+游标 cursor
+概念：用来存放多条数据的一个结果集
+使用步骤：
+定义游标，打开游标，提取数据 处理数据，关闭游标，
+cursor 游标名 is select语句;
+open 游标名
+顺序访问的游标 叫做 非滚动游标
+ fetch 游标名 into 变量(record);  游标名%rowtype
+
+declare
+ cursor empcursor is select id,first_name name,salary from s_emp;
+ var_emp empcursor%rowtype;
+begin
+ open empcursor;
+ fetch empcursor into var_emp;
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ fetch empcursor into var_emp;
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ close empcursor;
+end;
+
+游标的属性
+ 游标名%found 在提取游标数据时，如果提取到了新数据，则这个属性返回true，如果没有提取到新数据，则返回false。
+ 但是这个属性使用有两个前提：1，游标必须处于打开状态，如果打不开则返回非法游标
+                       2，游标必须fetch，否则返回NULL
+ 游标名%notfound 在提取游标数据时，如果提取到了新数据，则这个属性返回false，如果没有提取到新数据，则返回true
+ 但是这个属性使用有两个前提：1，游标必须处于打开状态，如果打不开则返回非法游标
+                       2，游标必须fetch，否则返回NULL             
+
+使用简单循环结合notfound
+
+declare
+ cursor empcursor is select id,first_name name,salary from s_emp;
+ var_emp empcursor%rowtype;
+begin
+ open empcursor;
+ loop
+ fetch empcursor into var_emp;
+ exit when empcursor%notfound;
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ end loop;
+ close empcursor;
+end;
+
+使用while循环结合found
+declare
+ cursor empcursor is select id,first_name name,salary from s_emp;
+ var_emp empcursor%rowtype;
+begin
+ open empcursor;
+ fetch empcursor into var_emp;
+ while(empcursor%found) loop
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ fetch empcursor into var_emp;
+ end loop;
+ close empcursor;
+end;
+
+游标名%isopen 游标是否处于打开状态 是就返回true，否则返回false。
+需要注意的是，打开的游标不能再打开，关闭的游标不能再关闭。
+游标名%rowcount 游标指针偏移量
+
+select table_name from user_tables where lower(table_name) like '%student%';
+
+使用for循环(智能循环)会自动打开游标，自动提取数据，自动关闭游标
+declare
+ cursor empcursor is select id,first_name name,salary from s_emp;
+ var_emp empcursor%rowtype;
+begin
+ for var_emp in empcursor loop -- 把游标当作区间
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ end loop;
+end;
+
+带参游标
+可以给一个游标设计参数。
+这个参数可以在游标对应的select语句中使用。
+这个参数的类型不能加长度修饰 varchar2 / number 但是可以使用 表名.字段名%type。
+带参游标需要打开游标传入实参。
+
+
+declare
+ cursor empcursor(var_id number) is select id,first_name name,salary 
+ from s_emp where id>var_id;
+ var_emp empcursor%rowtype;
+begin
+ open empcursor(10); --在打开游标的时候传递实参
+ loop
+ fetch empcursor into var_emp;
+ exit when empcursor%notfound;
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ end loop;
+ close empcursor;
+end;
+
+for循环遍历带参游标
+declare
+ cursor empcursor(var_id number) is select id,first_name name,salary
+ from s_emp where id<var_id;
+ var_emp empcursor%rowtype;
+begin
+ for var_emp in empcursor(20) loop -- 把游标当作区间
+ dbms_output.put_line(var_emp.id||':'||var_emp.name||':'||var_emp.salary);
+ end loop;
+end;
+
+参考游标(引用游标)
+ref cursor
+这种游标对应的select语句是一个动态的字符串
+语法如下：
+declare
+ type 参考游标类型名 is ref cursor;
+ 参考游标变量 参考游标类型名;
+begin
+ -- 把游标变量 关联到一个字符串即可;
+ open 游标变量 for sqlstr using 参数;
+end;
+
+如果sqlstr带占位符，则使用using传参
+
+把sqlstr='select * from s_emp where id>:b0'对应的内容查询出来，放入游标中，输出游标的内容；
+使用参考游标类型定义游标变量
+
+declare
+ sqlstr varchar2(50);
+ type myrefcursor is ref cursor;
+ empcursor myrefcursor;
+ var_emp s_emp%rowtype;
+begin
+ sqlstr:='select * from s_emp where id>:b0';
+ open empcursor for sqlstr using 20;
+ loop
+  fetch empcursor into var_emp;
+  exit when empcursor%notfound;
+  dbms_output.put_line(var_emp.id||','||var_emp.first_name);
+ end loop;
+ close empcursor;
+end;
+
+异常处理 exception
+PL/SQL 程序默认的错误处理方式
+
+declare
+ var_name s_emp.first_name%type;
+begin
+ select first_name into var_name
+  from s_emp where id>1;
+ dbms_output.put_line('var_name='||var_name);
+ select first_name into var_name
+  from s_emp where id>1;
+ dbms_output.put_line('var_name='||var_name);
+exception
+ when no_data_found then
+ dbms_output.put_line('no emp found');
+ when too_many_rows then
+ dbms_output.put_line('too many emps found');
+ when others then
+ dbms_output.put_line('have exception');
+end;
+
+others 的处理太不明确
+找系统规定的错误 做出相应的反应
+
+用户自定义异常(了解)
+1定义异常
+  使用异常把程序中各种各样的问题描述出来，
+2抛出异常
+  根据程序中的条件，满足什么样的条件，抛出什么异常
+3捕获异常
+4处理异常
+  根据相应的异常做出相应的处理。
+
+
+declare
+ many_order exception;
+ many_emp exception; 
+begin
+ if 1=1 then
+  raise many_emp;
+ end if;
+exception
+ when many_emp then
+ dbms_output.put_line('many emp');
+end;
+
+
+procedure过程
+把一组逻辑相关的类型 变量 语句 等 组织到一起的一个逻辑结构
+
+create or replace procedure progetmax(v_num1 number,v_num2 number) 
+is
+ num_error exception;
+begin
+ if v_num1>v_num2 then
+ dbms_output.put_line(v_num1);
+ elsif v_num1<v_num2 then
+ dbms_output.put_line(v_num2);
+ elsif v_num1=v_num2 then
+ dbms_output.put_line('equals,'||v_num1);
+ else raise num_error;
+ end if;
+exception
+ when num_error then
+ dbms_output.put_line('num error');
+end;
+ 
+
+如何调用
+begin
+ progetmax(1,100);
+ progetmax(123,100);
+end;
+
+select text from user_source
+ where name = 'PROGETMAX';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

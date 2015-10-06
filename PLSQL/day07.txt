@@ -1,0 +1,240 @@
+
+plsql developer
+
+#过程
+create or replace procedure 过程名(参数列表) -- 没有参数就不要写圆括号
+
+##察看存储过程
+desc 过程名;
+
+drop procedure 过程名; -- 删除一个过程名
+
+参数的名字/参数的类型/参数的模式/参数的默认值(缺省值)
+
+
+create or replace procedure progetmax1(var_x number:=10,var_y number:=20)
+is
+begin
+ if var_x > var_y then
+  dbms_output.put_line(var_x);
+ else
+  dbms_output.put_line(var_y); 
+ end if;
+end;
+
+begin
+ progetmax(); -- 参数的位置赋值
+ progetmax(2);
+ progetmax(var_y=>-10); -- 参数的名字赋值 ， 跳过了var_x对var_y进行赋值
+end;
+
+##参数的模式
+in 默认的模式 参数之负责给存储过程传入值
+out 只负责给存储过程传出
+in out 能负责传入和传出
+
+出错之后使用show errors来显示错误的详细情况
+
+设计一个存储过程，有三个整数参数，打印前两个参数的最大值，然后把前两个参数的和存入第三个参数中。调用存储过程，验证功能。
+
+create or replace procedure profunc(var_x number:=10,var_y number:=20,var_z out number)
+is
+begin
+ progetmax1(var_x,var_y);
+ var_z:=var_x+var_y;
+end;
+
+declare
+ var_num number;
+begin
+ profunc(1,9526,var_num);
+ dbms_output.put_line(var_num);
+end;
+ 
+
+create or replace procedure profunc_wzl01(var_x number:=10,var_y in out number)
+is
+begin
+ progetmax1(var_x,var_y);
+ var_y:=var_x+var_y;
+end;
+
+
+
+设计一个存储过程 有两个参数 第一个参数代表从的数，第二个参数用来存储 前n项的和；
+
+create or replace procedure profunc_wzl03(var_x number:100,var_y out number)
+is
+ var_tmp number:=1;
+ var_sum number:=0;
+begin
+ loop 
+  exit when var_tmp>var_x;
+  var_sum:=var_sum+var_tmp;
+  var_tmp:=var_tmp+1;
+ end loop;
+ var_y:=var_sum;
+end;
+
+create or replace procedure profunc_wzl02(var_x number:=100,var_y out number)
+is
+ var_sum number:=0;
+begin
+ for var_tmp in 1..var_x loop
+  var_sum:=var_sum + var_tmp;
+ end loop;
+ var_y:=var_sum;
+end;
+
+declare
+ var_sum number;
+begin
+ profunc_wzl02(var_y=>var_sum);
+ dbms_output.put_line(var_sum);
+end;
+
+#函数
+PLSQL中函数和存储过程中的不同
+1.关键字不同, procedure/function
+2.函数有返回值类型和返回值类型，过程没有
+3.调用方式不同，过程可以直接在PLSQL中调用，函数需要组成表达式
+
+？函数会不会处理exception
+设计一个PLSQL中的函数，有两个整数参数，返回两个整数参数的最大值。
+
+create or replace function funcgetmax(var_x number,var_y in out number) return number
+is
+ var_tmp number;
+begin
+ if var_x>var_y then
+  var_tmp:=var_x;
+ else var_tmp:=var_y;
+ end if;
+ var_y:=var_y+var_x;
+ return var_tmp;
+end;
+
+declare
+ var_res number:=20;
+begin
+ dbms_output.put_line(funcgetmax(10,var_res));
+ dbms_output.put_line(var_res);
+end;
+
+#package 包
+把一组逻辑相关的变量、类型、过程、函数 等组织到一起的一个逻辑结构
+
+系统预定义包
+dbms_output.put_line
+dbms_random
+dbms_lob  -- blob clob 存放大数据的包，效率低，但是安全
+         一般不把大数据存入数据库，如果要存入大数据可以使用dbms_lob包，
+         解决大数据的管理一般存入这些大数据的路径即可。
+dbms_job --定时任务，可以定时调用存储过程
+
+查看包名  desc dbms_output
+
+
+dbms_random.value(1,100); -- 随机生成一个1~100的数字
+
+dbms_job.submit( job out binary integer, what varchar2, next_date date, interval varchar2);
+系统返回的任务代码/要定时执行的存储过程/开始调用的时间/间隔时间、
+dbms_job.run(job binary integer); -- 把编号为job的定时任务运行起来
+dbms_job.remove(job binary integer); -- 删除编号为job的定时任务
+
+##定时建立存储过程
+1，建立一张表test1506
+ id/name
+2，为这张表建立一个序列
+3，写一个存储过程，调用一次就向表中插入一条数据，并且id的值使用sequence来产生
+4，使用dbms_job每隔一分钟调用一次存储过程
+
+约束的名字 pk fk uk nn ck
+
+create table test1506_wzl90(
+ id number(7) constraint test1506_wzl90_id_fk primary key,
+ name varchar2(30)
+);
+
+create sequence test1506_wzl90_id start with 1;
+
+create or replace procedure proinsert_wzl90
+is
+begin
+ insert into test1506_wzl90
+ values(test1506_wzl90_id.nextval,'test'||test1506_wzl90_id.nextval);
+ commit;
+end;
+
+declare
+ jobno binary integer
+begin
+ dbms_job.submit(jobno,'proinsert_wzl90();',sysdate,'sysdate+1/(24*60)'); -- 这里的圆括号是可以加上的
+ dbms_output.put_line('jobno='||jobno);
+ dbms_job.run(jobno);
+end;
+
+select job,what from user_jobs;
+
+如何调用自定义包中的数据 ： 在数据前加mypack
+
+#trigger 触发器
+##概念(DML级触发器概念)
+在进行DML操作时，这些操作可以被系统捕获到，进而根据这些行为 响应一些动作或语句。
+这种功能可以在触发器中完成。
+##语法
+create or replace trigger 触发器的名字
+ before | after DML(insert delete update) on 表名 (for each row)
+declare
+begin
+exception
+end;
+触发器就是个匿名块，前面加个头
+
+create table emp_wzl as select * from s_emp;
+
+create or replace trigger emp_wzl_tigger after update on emp_wzl
+declare
+begin
+ dbms_output.put_line('you update emp');
+end;
+
+update emp_wzl set last_name='ghinasf' where id=3;
+
+##语句级触发器(不加for each row)，无论sql语句影响多少行，只触发一次，
+而实际开发中，希望语句影响多少行就触发多少次;
+
+##行级触发器(加上for each row)
+create or replace trigger emp_wzl_tigger after update on emp_wzl for each row
+declare
+begin
+ dbms_output.put_line(:old.id||','||:old.salary||','||:old.last_name);
+ dbms_output.put_line('you update emp');
+end;
+
+针对每一次DML进行触发，如果没有有效的操作，则不会触发
+update :old :new
+delete :old
+insert      :new
+
+**规定出发器中不能出现事务控制语句**
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+

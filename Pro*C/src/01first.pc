@@ -1,0 +1,24 @@
+
+#include<stdio.h>
+exec sql include sqlca;
+
+int main(){
+	/* 定义一个连接数据库的用户名和密码  */
+
+	char userpasswd[30]="openlab/open123";
+	char var_name[30];
+	/* 连接数据库  */
+	exec sql connect:userpasswd;
+
+	/*  把s_emp id=1 first_name 放入var_name  */
+	exec sql select fisrt_name into :var_name from s_emp where id=1;
+
+	printf("%s\n",var_name);
+	/* 把数据库断开 */
+	exec sql commit work release;
+
+	return 0;
+}
+
+
+

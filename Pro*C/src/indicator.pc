@@ -1,0 +1,25 @@
+/* File Name: indicator.pc
+** Author: 
+** Version: 
+** Created Time: 15/08/31-14:44  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+
+int main() {
+
+	exec sql begin declare section;
+	char* userpasswd="openlab/open123";
+	short ind=123;
+	int m_id;
+	exec sql end declare section;
+
+	exec sql connect :userpasswd;
+	exec sql select manager_id into m_id:ind from s_emp where id=1;
+
+	printf("m_id = %d.ind = %hd\n",m_id,ind);
+
+	exec sql commit work realse;
+	return 0;
+}

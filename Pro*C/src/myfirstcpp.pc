@@ -1,0 +1,19 @@
+#include <iostream>
+using namespace std;
+exec sql include sqlca;
+int main()
+{    
+	/* 连接数据库的用户名密码 */
+	exec sql begin declare section;
+	char userpasswd[30]="openlab/open123";
+	char var_name[30];
+	exec sql end  declare  section;
+	/* 连接数据库 */
+	exec sql connect:userpasswd;
+	exec sql select first_name into :var_name
+		from s_emp where id=3;
+    // printf("var_name=%s\n",var_name);
+	cout << "var_name=" << var_name << endl;
+	exec sql commit work release;
+}
+

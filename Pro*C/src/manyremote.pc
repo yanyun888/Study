@@ -1,0 +1,37 @@
+/* File Name: remote.pc
+** Author: 
+** Version: 
+** Created Time: 15/09/01-11:45  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+
+int main(){
+
+	exec sql begin declare section;
+	char userpasswd[30]="openlab/open123";
+	char var_name[30];
+	/* 远程数据库描述 */
+	char rDBdesc[20]="DB20";
+	/* 制造区分数据库的连接标签 */
+	char labDB10[10]="DB10";
+	char labDB20[10]="DB20";
+	exec sql end   declare section;
+	/* 直接和远程数据库建立连接  */
+	exec sql connect :userpasswd at:labDB20 using :rDBdesc;// 远程连接
+	exec sql connect :userpasswd at:labDB10;// 本地连接
+	exec sql at:labDB10 select first_name into :var_name 
+		from s_emp where id=1;
+	printf("DB10 var_name=%s\n",var_name);
+	exec sql at:labDB20 select first_name into :var_name 
+		from s_emp where id=1;
+	printf("DB20 var_name=%s\n",var_name);
+
+	/* 需要以此断开连接 */
+	exec sql at:labDB10 commit work release;
+	exec sql at:labDB20 commit work release;
+
+	return 0;
+}
+

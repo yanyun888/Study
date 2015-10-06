@@ -1,0 +1,50 @@
+/* File Name: dsqlc.pc
+** Author: 
+** Version: 
+** Created Time: 15/09/01-17:37  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+
+int main(){
+
+	exec sql begin declare section;
+
+	char userpasswd[30]="openlab/open123";
+	char sqlstr[100];
+	int id=15;
+	
+	struct {
+		int id;
+		char name[30];
+		double salary;
+	}emp;
+
+	exec sql end   declare section;
+
+	exec sql connect :userpasswd;
+	
+	sprintf(sqlstr,"%s","select id,first_name,salary from s_emp where id>:d0");
+	
+	exec sql prepare ss from :sqlstr;
+	exec sql declare empcursor cursor for ss;// 声明一个游标关联到ss
+
+	exec sql open empcursor using :id;
+
+	exec sql whenever notfound do break;
+	while(1){
+		exec sql fetch empcursor into :emp;
+		printf("%d,%s,%ld\n",emp.id,emp.name,emp.salary);
+
+	}
+	
+	exec sql close empcursor;
+
+	exec sql commit work release;
+
+	return 0;
+}
+
+
+

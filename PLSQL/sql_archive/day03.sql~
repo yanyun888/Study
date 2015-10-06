@@ -1,0 +1,248 @@
+
+
+select from join
+
+?左连接，右连接
+
+分组函数(多行函数) -- 比如：每个部门的平均工资
+子查询 -- 一次执行多条查询(每条查询也是分步完成)
+建表/删除表的语句DDL语句
+DML语句
+
+
+分组函数：
+    引入了group by 子句，其group by说明按什么进行的分组，having中存放包含分组函数的条件。
+    where和having都可以做条件子句，区别：having是专为分组函数设计的，包含分组函数的条件只能使用having。
+    where的条件大多数都可以放在having中，但一般都是使用where(效率高)。
+
+最全select语句格式：(其中select和from必须有)
+select column,group_function
+from table
+where condition
+group by group_by_expression
+having group_condition
+order by column
+
+常见的分组函数：
+    count() -- 统计有多少个记录，一般使用count(*)
+    max() -- 取组中的最大值
+    min() -- 取组中的最小值
+    sum() -- 本组求和
+    avg() -- 本组平均值
+    
+    count，max，min可以操作任意类型的数据
+    sum，avg只能操作数值类型的数据
+  
+select count(*) from s_emp;
+
+select dept_id,max(salary),min(salary),sum(salary),avg(salary),count(*)
+from s_emp
+group by dept_id
+order by dept_id;
+
+??max(e.salary),min(e.salary),
+select d.name,sum(e.salary),avg(e.salary),count(*)
+from s_emp e,s_dept d
+where e.dept_id = d.id
+group by d.name
+order by d.name;
+
+
+查询所有员工的平均提成
+分组函数会自动忽略空值
+select avg(nvl(commission_pct,0)) average from s_emp;
+
+查询每个部门工资最高的员工的部门编号和工资信息
+
+select dept_id,max(salary),salary -- 错
+from s_emp
+group by dept_id;
+
+select dept_id,max(salary),salary -- 语法上对了，但是不是我们想要的
+from s_emp
+group by dept_id,salary;
+
+如果select中包含分组函数，那么，select后面出现的其他字段/表达式，必须是分组函数或group by中出现的字段 
+
+select dept_id,avg(salary)
+from s_emp
+where dept_id<50
+group by dept_id
+having avg(salary)>1300;
+
+
+update s_emp set salary=5001
+where salary=5000;
+
+分组函数只能嵌套两层，但和但行函数可以多次嵌套。
+
+子查询
+--一次执行多条查询就可以使用子查询，子查询的结构是一个查询使用另外一个查询做条件。
+select a ... (select b ...)
+a叫主查询，b叫子查询。子查询先于主查询执行
+
+查询和simth一个部门的员工信息(id/last_name/salary)
+
+select id,dept_id,last_name 
+from s_emp
+where dept_id=(
+select dept_id from s_emp where lower(last_name) = 'smith');
+
+select id,last_name,salary,dept_id
+from s_emp
+where dept_id in(
+select dept_id from s_emp where salary = 1400);
+
+select id,last_name,salary,dept_id
+from s_emp
+where dept_id = any(
+select dept_id from s_emp where salary = 1400);
+
+
+any/all:any代表任意一个，all代表所有
+
+建表语句
+create table s_csd1506(
+    字段名 字段类型 默认值 字段级约束，
+    ...，    
+    表级约束
+);
+
+其中，默认值可以不写，约束也可以不写。
+字段类型有很多种，常见的：number/char/varchar2/date
+
+drop table test_wzl90;
+create table test_wzl90(
+    id number(7),
+    name varchar2(40),
+    brithdate date
+);
+
+DML语句 -- 数据的增删改
+
+insert into 表名(字段名,...)
+values(字段值,...);
+一次只能插入一条数据
+注：如果插入数据时，所有字段都需要插入，字段名可以省略，省略就意味着使用表中左右字段。
+
+commit; -- 确认提交
+
+insert into test_wzl90(id,name)
+values(01,'wangzhil');
+
+insert into test_wzl90
+values(02,'wangzhil',to_date('1990-11-18','yyyy-mm-dd'));
+
+select * from test_zlm;
+
+update 表名 set 字段=新的值,字段=新的值
+where ...;
+注意：如果不写where条件，就是全表修改
+
+删除：
+delete from 表名 where 条件;
+删除一定要加where，否则全部数据都删除
+rollback
+
+insert into test_wzl90(id,name)
+values(3,'caocao');
+commit;
+
+update test_wzl90 set brithdate=to_date('1989-08-01','yyyy-mm-dd')
+where id=3;
+
+create table student_wzl90(
+    id number(7) not null,
+    name varchar2(20) ,
+    gender char(6) default 'w',
+    j_date date
+);
+
+insert into student_wzl90
+values(1,initcap('guanyu'),'male',to_date('1975-05-4','yyyy-mm-dd'));
+
+insert into student_wzl90
+values(2,initcap('zhangfei'),'male',to_date('1945-3-8','yyyy-mm-dd'));
+
+insert into student_wzl90
+values(3,initcap('machao'),'male',to_date('1945-5-8','yyyy-mm-dd'));
+
+insert into student_wzl90
+values(4,initcap('huangzhong'),'male',to_date('1945-3-8','yyyy-mm-dd'));
+
+insert into student_wzl90
+values(5,initcap('zhaoyun'),'male',to_date('1945-2-8','yyyy-mm-dd'));
+
+update student_wzl90 set j_date=to_date('1945-03-09','yyyy-mm-dd')
+where id in(1,3);
+
+select id,name,j_date from student_wzl90
+where to_char(j_date,'mmdd')='0308';
+
+delete from student_wzl90
+where to_number(to_char(j_date,'mm'))>7;ro
+
+update student_wzl90 set j_date=to_date('1979-10-10','yyyy-mm-dd')
+where id=4;
+
+
+通常在插入数据时，没有提供的值为空值，但如果指定了默认值，就会变成默认值。
+
+事物处理机制
+由于DML(增删改)语句可能对数据进行误操作，造成很严重的后果，因此提供事务处理机制，制约误操作的后果。
+
+如果DML操作没问题，commit进行确认;如果DML操作有错误，rollback进行回滚；
+
+事物处理
+DML语句执行后，如果不进行事物处理，数据的状态：
+1 数据库中存储的是旧数据，新数据并没有存入，
+2 当前窗口可以看到新数据，但其他窗口看到的都是旧数据，
+3 会锁定本次操作的影响记录，不锁定不受本次操作影响的记录。
+
+commit后数据的状态：
+1 数据库存入新数据，旧数据将不复存在
+2 所有窗口看到的都是新数据
+3 所有的锁定被解除
+
+rollback后数据的状态：
+1 数据库存的是旧数据，新数据不复存在
+2 所有窗口看到的都是旧数据
+3 所有的锁定被接触
+
+select * from student_zlm00;
+delete from student_zlm00 where id=1;
+
+
+在某些情况下，事务会被自动提交或自动回滚。
+1 DDL/DCL会自动提交数据commit
+2 正常退出sqlplus自动提交commit
+3 非正常退出，自动回滚
+
+约束可以在建表时进行设置，用于限制存入表中的数据。
+表级约束，字段级约束，一共有5种约束constraint
+ 非空约束 -- 该字段不支持空值
+ 唯一约束 -- 不支持重复的值，但不限制空值
+ 主键约束 -- 效果上说，就是非空+唯一，主键一般用于代表一条记录。比如学号代表学生。
+ 外键约束 -- 体现了两个表之间的关系(一对多的关系)，比如：员工的dept_id和部门表的id就是外键约束
+ check约束 -- 检测其他条件，支持条件表达式。
+ 
+ not null
+ unique
+ primary key()
+ 
+ name varchar2(2) not null, -- 系统默认约束名
+ ...
+ name varchar2(2) constraint not null,
+ name varchar2(2) unique,
+ name varchar2(40) constraint unique.
+ 
+ id number(10) primary key(id)
+ 
+ constraint 约束名 primary key(id),
+ 
+ 
+ 
+
+ 
+
+

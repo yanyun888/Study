@@ -1,0 +1,39 @@
+/* File Name: dsqla.pc
+** Author: 
+** Version: 
+** Created Time: 15/09/01-17:04  */
+ 
+ 
+#include<stdio.h>
+#include<string.h>
+exec sql include sqlca;
+
+int main(){
+	
+	exec sql begin declare section;
+	char userpasswd[30]="openlab/open123";
+	char sqlstr[100]="insert into s_dept\
+					  values(:b0:b1:b2)";
+	int id=1234;
+	char name[30]="test1234";
+	int rid=1;
+	exec sql end   declare section;
+	
+	exec sql connect :userpasswd;
+
+	//strcpy(sqlstr,"create table test1506dsql(id number(7),name varchar2(30))");
+	exec sql prepare s from :sqlstr;
+	exec sql execute s using :id,:name,:rid;
+	if(!sqlca.sqlcode){
+		printf("insert data success!\n");
+		exec sql commit;
+	}else{
+		printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+	}
+
+	exec sql commit work release;
+
+	return 0;
+}
+
+

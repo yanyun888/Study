@@ -1,0 +1,25 @@
+/* File Name: 02demo.pc
+** Author: 
+** Version: 
+** Created Time: 15/08/31-09:34  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+
+int main(){
+	
+	char usrpasswd[30]="openlab/open123";
+	char var_name[30];
+	exec sql connect:usrpasswd;
+
+	exec sql select first_name into :var_name from s_emp where id =3;
+
+	printf("%s\n",var_name);
+
+	exec sql commit work release;
+
+	return 0;
+}
+
+

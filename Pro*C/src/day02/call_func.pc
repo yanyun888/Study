@@ -1,0 +1,50 @@
+/* File Name: sql.pc
+** Author: 
+** Version: 
+** Created Time: 15/09/01-09:57  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+ 
+int main(){
+
+	exec sql begin declare section;
+	char userpasswd[30]="openlab/open123";
+	int id=1;
+	char name[30]="test1";
+	double salary =8899.8;
+	exec sql end declare section;
+
+	exec sql connect:userpasswd;
+
+	exec sql create table csd1506student_wzl(
+		id number constraint student1506_id_pk primary key,
+		name varchar2(30),
+		salary number
+	);
+
+	exec sql insert into csd1506student_wzl
+		values(:id,:name,:salary);
+	if(!sqlca.sqlcode){
+		printf("insert data success!\n");
+		exec sql commit;
+	}
+	else{
+		printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+	}
+
+	exec sql insert into csd1506student_wzl
+		values(2,'test2',19888.5);
+	exec sql commit;
+	exec select salary into :salary 
+		from csd1506student_wzl where id=2;
+	printf("salary=%d\n",salary);
+
+	exec sql commit work release;
+
+	return 0;
+}
+
+
+

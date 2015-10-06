@@ -1,0 +1,28 @@
+/* File Name: 02demo.pc
+** Author: 
+** Version: 
+** Created Time: 15/08/31-09:34  */
+ 
+#include<iostream>
+using namespace std;
+exec sql include sqlca;
+
+int main(){
+	
+	exec sql begin declare section;
+	char usrpasswd[30]="openlab/open123";
+	char var_name[30];
+	exec sql end delcare section;
+	
+	exec sql connect:usrpasswd;
+
+	exec sql select first_name into :var_name from s_emp where id =3;
+
+	cout<<"var_name="<<var_name<<endl;
+
+	exec sql commit work release;
+
+	return 0;
+}
+
+

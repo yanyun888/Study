@@ -1,0 +1,38 @@
+/* File Name: sql.pc
+** Author: 
+** Version: 
+** Created Time: 15/09/01-09:57  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+ 
+
+/* sql 错误处理函数  */
+
+void processError(){
+
+	printf("have sql error\n");
+}
+
+
+int main(){
+
+	exec sql begin declare section;
+	char userpasswd[30]="openlab/open123";
+	int id=1;
+	char name[30]="test1";
+	double salary =8899.8;
+	exec sql end declare section;
+	exec sql whenever sqlerror do processError();
+	exec sql connect:userpasswd;
+
+	exec sql select id,last_name from s_emp where id>1;
+
+	exec sql commit work release;
+
+	return 0;
+}
+
+
+

@@ -1,0 +1,33 @@
+/* File Name: dbLink.pc
+** Author: 
+** Version: 
+** Created Time: 15/09/01-14:30  */
+ 
+ 
+#include<stdio.h>
+exec sql include sqlca;
+
+int main(){
+
+
+	exec sql begin declare section;
+	char username[30]="soctt";
+	char passwd[30]="tigger";
+	char var_name[30]={0};
+	double salary;
+	exec sql end   declare section;
+
+	exec sql connect :username identified:passwd;
+	exec sql select first_name into :var_name
+		from s_emp where id=1;
+	printf("first_name = %s\n",var_name);
+
+	exec sql select first_name into :var_name
+		from s_emp@db10to80link where id=1;
+	printf("first_name = %s\n",var_name);
+
+
+	return 0;
+}
+
+

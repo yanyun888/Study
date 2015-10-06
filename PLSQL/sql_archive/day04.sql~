@@ -1,0 +1,375 @@
+
+delete from 删除数据
+
+drop table student_wzl90;
+create table student_wzl90(
+    id number(10) primary key,
+    name varchar2(40) not null,
+    phone varchar2(20) unique, 
+    class_id number(7),
+    constraint s_stu_cla_id_fk90 
+    foreign key (class_id)
+    references class_wzl90(id)
+);
+
+insert into student_wzl90
+values(1,'zhangfei','110',500);
+
+insert into student_wzl90
+values(2,'guanyu','115',500);
+
+select table_name from user_tables
+where lower(table_name) like '%zlq%';
+
+select table_name from user_tables
+where lower(table_name) like '%wzl%';
+
+外键约束 -- 体现了两个表之间的关系，外键约束又叫主外键关联，用于体现表间一对多的关系,
+外键的实现方式：
+1.先有一对多的两个表，比如：部门和员工
+2.一对应的表中(部门表)提供主键，多对应的表中(员工表)需要加上外键字段，两个表的关系就完成了。
+格式：
+  可以写字段级和表级
+  
+constraint 约束名 -- 约束名字也不能重复
+froeign key(dept_id)
+references 关联表(主键字段)
+
+create table class_wzl90(
+    id number(7) primary key,
+    name varchar2(30)
+);
+
+外键约束的效果
+1 一对应的表(部门)中没有效果
+2 多对应的表(员工表)中外键字段的值必须来自于一对应的表(部门表)或者为null
+
+insert into class_wzl90
+values(1,'qima');
+insert into class_wzl90
+values(2,'dadao');
+
+删除数据
+1 多对应的表(员工表)删除没影响
+2 一对应的表(部门表)删除时，需要额外处理多对应的表(员工表)中的数据。
+    处理方式：1 手工删除员工表的数据，再删除父表
+            2 使用级联删除(父子表一起删除)。 on delete cascade
+            3 使用on delete set null，置空关联字段，不删除子表数据
+            一般更习惯使用第三种方式
+            
+create table student_wzl90(
+    id number(10) primary key,
+    name varchar2(40) not null,
+    phone varchar2(20) unique, 
+    class_id number(7),
+    constraint s_stu_cla_id_fk90 
+    foreign key (class_id)
+    references class_wzl90(id) on delete set null
+);   
+
+关于外键：
+1.写法上带上 on delete set null
+2.很多时候，复杂系统是不是用外键约束，而是用程序控制外键的效果
+
+check 约束
+create table emp_wzl90(
+    id number(7) primary key,
+    name varchar2(30),
+    salary number(12,2),
+    check(salary>1200)
+);
+
+check 约束一般用不到，因为程序也可以实现同样的功能判断，而且不需要访问数据库，效率高。
+
+数据库支持 用子查询建表，格式  -- 不是很常用
+create table 表名(字段名,...) AS 子查询
+这种建表的方式可以在建表的同时也建立起数据，但表结构上，除了非空约束之外的其他约束都会消失
+
+oracle的对象sequence,index,view
+在oracle中表是被看成一种对象，除了表之外，常见的对象还有：试图/序列/索引
+视图存的是一个查询结果，以后再操作时直接操作视图即可，简化多次查询的sql语句
+视图中不存储数据，数据还是存在表中，视图的数据也来自于表。
+索引是提升查询效率的一种对象，可以对经常查询的字段，建立起索引。
+序列是给oracle提供主键的一种对象
+
+序列：
+建表一般都有主键字段，主键字段的值是用户填写还是数据库提供？ -- 由数据库来提供。序列就是提供主键值的。
+sequenece
+create sequence 序列名 increment by... start with...maxvalue...minvalue;
+increment by/start with可以不写，默认从1开始,自增1。
+序列和表之间没有任何必然联系，只是使用关系
+drop sequence 序列名 -- 删除序列名字
+nextval/currval提供主键的值
+序列就是一个可以自增的数，nextval可以取自增后的值，currval就是不自增
+
+不commit会不会影响nextval的值
+
+使用sequence自动生成主键
+
+create sequence se_wzl00;
+
+insert into student_wzl90(id,name,phone)
+values(se_wzl00.nextval,'xan1','78544d'   );
+
+无论插入成功或失败，都会增加
+update se_wzl00 set currval=2;
+
+alter table
+---------------
+
+（1）修改字段名
+alter table 表名 rename column 旧字段 to 新字段
+alter table student_shi007 rename column student_no to student_id;
+（2）修改字段长度
+alter table 表名 modify(字段名 字段类型(长度));
+alter table student_shi007 modify(sex varchar2(12));
+（3）修改表名
+rename 旧表名 to 新表名;
+rename student_shi007 to student_shi008;
+
+---------------
+索引：可以提升数据的查询效率，但是会降低数据的增删效率。因此，只有频繁做查询条件的字段需要加索引。
+create index 索引名 on table(字段名,...  );一般只加一个字段即可。
+唯一约束(包括主键约束)会自动加索引。
+
+视图view
+restrict database access
+simplify queries
+data independence
+different appearances for the same data
+视图针对的是一种查询结果当成对象永久保存。
+视图本身没有数据，数据还是存在表中。
+不推荐使用视图进行修改数据
+
+视图的优点：
+1 简化查询，降低团队写查询语句的难度
+2 可以把同样的数据用不同的形式展现出来
+3 控制用户访问的数据，隐蔽数据库表的结构
+
+create [or replace] view 视图名 as 子查询
+with read only;
+
+视图和表的查询是一样的。
+
+数据库的设计
+特殊的查询
+top n和分页处理
+oracle使用rownum实现top n
+显示工资最高的前10名员工信息()
+
+select * from 
+(select id,last_name,salary from s_emp
+order by nvl(salary,0) desc)
+where rownum<11;
+
+select * from 
+(select id,last_name,salary from s_emp
+order by nvl(salary,0) desc)
+where rownum between 5 and 8; --不会出结果
+
+select * from 
+(select id,last_name,salary from s_emp
+order by nvl(salary,0) desc)
+where rownum>1;  -- 不会出结果
+
+rownum 比较特殊，只能用于小于，其他的没有结果
+
+oracle的分页要像下面这么写，
+select * from(
+select rownum row_id,id,last_name,salary from(
+select id,last_name,salary from s_emp
+order by nvl(salary,0) desc)
+)where row_id between 5 and 8;
+
+--
+
+数据库设计 -- 
+范式1：不能有重复字段
+范式2：所有的非主属性字段必须依赖与主属性字段
+范式3：不能有字段更依赖于其他非主属性字段。
+假定：有这写数据要建表
+员工编号/员工名/薪水/出生时间/年龄/部门编号/部门名/部门地址
+--出生时间和年龄是重复字段，而且年龄不能存入数据库
+员工编号/员工名/薪水/出生时间/年龄
+部门编号/部门名/部门地址
+--部门名称和部门地址依赖于部门编号--分表
+
+
+两张表之间的关系设计套路
+一对一 -- 1个A对应1个B，1个B也对应1个A
+一对多 -- 
+多对多 --
+没有关系 --
+
+身份证表和人员表
+班级和学生
+学生和课程
+
+
+一对一:(不是特别常见)
+1 并表，合并两张表
+2 共同主键法，两个表用相同的主键
+
+一对多:(常见)
+主外键关联(外键约束),在一方(父表)提供主键,在多方(子表)建立外键关联字段。
+
+多对多:(常见)
+建立一张关联表，这个关联表中存放两个表的主键(两个外键关联)。
+
+create table student_wzl90(
+    id number(10) primary key,
+    name varchar2(30)
+);
+create table lesson_wzl90(
+    id number(10) primary key,
+    name varchar2(30)
+);
+
+create table stu_les_rel_wzl90(
+    s_id number(10),
+    l_id number(10),
+    constraint rel_stu_fk_wzl90
+    foreign key(s_id)
+    references student_wzl90(id),
+    constraint rel_les_fk_wzl91
+    foreign key(l_id)
+    references lesson_wzl90(id)
+);
+关系数据表没有主键，有外键 
+insert into student_wzl90(id,name)
+values(1,'guanyu');
+insert into student_wzl90(id,name)
+values(2,'machao');
+insert into student_wzl90(id,name)
+values(3,'zhaoyun');
+
+select s.name,r.name
+from student_wzl90 s,lesson_wzl90 l,stu_les_res_wzl90 r
+where s.id=r.s_id and l.id=r.l_id; -- 采用三表连接
+
+练习：
+设计一个最简单的电子商务网站的后台数据库
+用户表/商品表/订单
+用户的数据：id/用户名/密码/住址/电话/
+商品的数据：id/名称/价格/供应商
+订单的数据：id/订单金额/下单日期/商品的id/商品的数量/用户id
+
+所有的id都必须建立对应的序列，需要建立外键的关联。插入一些测试数据。
+要求实现以下查询。
+1 查询最近7天的订单信息 (考虑日期的加减法)
+2 显示某条订单的详细信息 (用户名/住址/电话/商品名称/价格/数量/总金额/下单日期)
+
+--create table usr_wzl90(
+    id number(7),
+    name varchar2(30),
+    passwd varchar2(20) not null,
+    address varchar2(100),
+    phone varchar2(20) unique,
+    constraint usr_pk00
+    primary key(id,name)
+);
+
+create table usr_wzl90(
+    id number(7) primary key,
+    name varchar2(30) unique,
+    passwd varchar2(20) not null,
+    address varchar2(100),
+    phone varchar2(20) unique
+);
+
+create table product_wzl90(
+    id number(7) primary key,
+    name varchar2(30) not null,
+    price number(7,2)
+);
+
+
+create table order_wzl90(
+    id number(10) primary key,
+    order_time date,
+    usr_id number(7),
+    constraint order_usr_fk90
+    foreign key(usr_id)
+    references usr_wzl90(id)
+);
+
+考虑一个订单中有多种商品的情况
+create table sub_order_wzl90(
+    id number(12) primary key,
+    prod_id number(7),
+    prod_sum number(7),
+    constraint sub_prod_fk90
+    foreign key(prod_id)
+    references product_wzl90(id)
+);
+
+create table order_sub_rel_wzl90(
+    ord_id number(10),
+    sub_id number(12),
+    constraint rel_ord_fk90
+    foreign key(ord_id)
+    references order_wzl90(id),
+    constraint rel_sub_fk90
+    foreign key(sub_id)
+    references sub_order_wzl90(id)
+);
+关系数据表多对多
+
+create sequence seq_usr_wzl90;
+create sequence seq_order_wzl90;
+create sequence seq_sub_wzl90;
+create sequence seq_product_wzl90;
+
+TABLE_NAME
+------------------------------
+PRODUCT_WZL90
+USR_WZL90
+ORDER_WZL90
+SUB_ORDER_WZL90
+ORDER_SUB_REL_WZL90
+
+insert into usr_wzl90
+values(seq_usr_wzl90.nextval,'wzl','qwerty','asdf fdasf','125036');
+insert into usr_wzl90
+values(seq_usr_wzl90.nextval,'sdf','qwerty','asdf fdasf','12575536');
+
+insert into product_wzl90
+values(seq_product_wzl90.nextval,'prod1',25.7);
+insert into product_wzl90
+values(seq_product_wzl90.nextval,'prod2',52.4);
+
+select seq_sub_wzl90.currval from dual;
+insert into sub_order_wzl90
+values(seq_sub_wzl90.nextval,1,50);
+insert into sub_order_wzl90
+values(seq_sub_wzl90.nextval,2,50);
+insert into sub_order_wzl90
+values(seq_sub_wzl90.nextval,1,20);
+insert into sub_order_wzl90
+values(seq_sub_wzl90.nextval,2,30);
+
+desc order_wzl90;
+insert into order_wzl90
+values(seq_order_wzl90.nextval,to_date('2015-08-22','yyyy-mm-dd'),1);
+
+desc order_sub_rel_wzl90;
+insert into order_sub_rel_wzl90
+values(1,1);
+insert into order_sub_rel_wzl90
+values(1,2);
+
+select o.id,u.name,o.order_time,s.prod_id,s.prod_sum
+from usr_wzl90 u,product_wzl90 p,order_wzl90 o,sub_order_wzl90 s,order_sub_rel_wzl90 r
+where u.id=o.usr_id and o.id = r.ord_id and s.id=r.sub_id and p.id = s.prod_id and o.id=1;
+
+...五表相联，这太复杂了吧，应该有更好的解决方法。。。
+
+
+select o.id,u.name,o.order_time,s.prod_id,s.prod_sum
+from usr_wzl90 u,product_wzl90 p,order_wzl90 o,sub_order_wzl90 s,order_sub_rel_wzl90 r
+where u.id=o.usr_id and o.id = r.ord_id and s.id=r.sub_id and p.id = s.prod_id and
+to_number(to_char(sysdate,'dd'))-7 < to_number( to_char(o.order_time,'dd'));
+
+
+
+
