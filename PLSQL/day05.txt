@@ -1,7 +1,11 @@
 
 on delete set null
 
-PL/SQL-procedual language
+
+PL/SQL，Oracle对SQL标准的扩充，增加了面向过程的功能，所以可以用来编写存储过程、存储函数、触发器等等。
+PL/SQL是结构化SQL，就是在标准SQL中加入了IF...ELSE... For....等控制过程的SQL。
+
+PL/SQL - procedual language
 
 优点：
 结构化模块化编程
@@ -56,8 +60,8 @@ not null 代表不能为空
  表 -- table
  游标
 3引用类型
- ref cursor(参考类型) 
-4大类型
+ ref cursor(参考类型)
+4大类型(数据体积较大)
  blob clob bfile
  
  %type 可以让变量类型和某个表的某个字段一样
