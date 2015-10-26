@@ -5,5 +5,18 @@
 *.cpp~
 *.c~
 *.md~
+*.lib
+*.dll
+*.obj
+*.zip
+*.ppt
+*.pptx
+*.exe
+*.RES
+*.idb
+*.pdb
+*.pch
+*.res
+
 
 
