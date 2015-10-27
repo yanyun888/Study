@@ -156,9 +156,31 @@ else
 `#include<map>`
 允许键重复的映射，一对多的关系。
 
+针对键值重复的解决方案：
+`iterator upper_bound(key_type cosnt& key);`
+返回指向中序遍历中第一个键大于key的元素的迭代器
+`iterator lower_bound(key_type const& key);`
+返回指向中序遍历中第一个键大于或等于key的元素的迭代器
+
+`pair<iterator,iterator> equal_range(key_type const& key);`
+所返回的pair中first就是lower bound，second就是upper bound
+
+##十、集合set
+`#include<set>`
+集合 - 没有值的映射
+
+##十一、多重集合multiset
+没有值的多重映射
+允许键重复的集合
+
+推荐参考书籍：
+《标准模板库用法指南》
 
 
-day 04  pm3:10
+
+
+
+
 
 
 

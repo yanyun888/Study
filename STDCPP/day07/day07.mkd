@@ -1,0 +1,77 @@
+
+
+运算操作符重载
+
+##运算符类的双目操作符 + -
+成员的函数形式
+全局函数形式L#R
+ ::operator#(L,R)
+ const RESULT operator#(const RESULT& l,const RESULT& r);
+
+友元friend,可以把一个全局函数声明为某个类的友元，这样该函数就可以访问类内部的私有成员。
+友元函数可以定义在类的内部，但不属于类，也没有this指针。
+
+##复制类的双目操作符 += -= =
+*复制类操作符表达式的值是左值，而且就是左操作数本身。
+*左操作数不能是常量，右操作数可以是常量。
+
+1) 成员函数的形式 
+    LEFT& operator#(const RIGHT& right){ ... } // 左调右参
+2) 全局函数的形式
+    LEFT& operator#(LEFT& left,const RIGHT right) { ... } //
+    
+##单目操作符的重载
+计算类#O(-,~,!)
+1) 成员函数的形式
+ #O --> O.operator();
+ const RESULT operator#(void)const{ ... }
+2) 全局函数的形式
+const RESULT operator#(const OPERAND& operand){ ... }
+
+自增减运算(也同样属于单目运算符)
+1) 前缀自增减
+    返回的是操作数的引用，操作数不能是右值
+    成员函数的形式：#O  O.operator#()
+    全局函数的形式: #O  operator#(O)
+2) 后缀自增减
+    返回值是自增减前的副本，操作数不能是右值。
+    成员函数的形式：#O  O.operator#(0)
+    全局函数的形式: #O  operator#(O，0) //使用哑元来带那个外
+    
+    
+##其他操作符重载
+1 插入/提取操作符 << , >>
+    istream
+    ostream
+    cout << a;
+    operator << (cout,a) 
+    **成员函数的形式不容易实现**，在这里不做考虑(!!)。
+    ostream& operator<< ( ostream& os,const RIGHT& right) { ... }
+    istream& operator>> ( istream& os,RIGHT right) { ... }
+    //标准库的名字都是小写的，自定义类的名字首字母大写
+    
+2 下标操作符 []
+
+3 括号操作符 ()
+
+
+4 解引用和间接成员访问 *， ->
+实现一个智能指针，智能指针是一个封装常规指针的类类型对象，当它离开作用域时，其析构函数负责释放该常规指针
+所指向的动态内存。
+ #include <memory>
+ C++ 标准库实现的智能指针模版
+ 
+5 类型转换操作符
+    类类型 -> 基本类型
+    基本类型 -> 类类型
+    A类类型 -> B类类型
+    
+
+
+
+
+
+
+
+
+
