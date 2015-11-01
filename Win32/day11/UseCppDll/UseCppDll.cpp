@@ -1,6 +1,6 @@
 
 
-
+//隐式链接
 #include <cstdio>
 
 _declspec(dllimport) int CppDll_add(int ,int);
@@ -8,7 +8,7 @@ _declspec(dllimport) int CppDll_sub(int ,int);
 _declspec(dllimport) int CppDll_mul(int ,int);
 
 #pragma comment(lib,"../lib/CppDll.lib")
-//通知链接器到哪抓函数的地址
+//通知链接器到哪抓函数的编号和CppDll.lib文件配套的dll文件名
 
 int main(){
 
