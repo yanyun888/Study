@@ -1,0 +1,93 @@
+
+钩子处理函数在勾取了消息之后，还要把消息归还回去
+操作系统中有一个钩子链
+CallNextHookEx 调用下一个钩子就是把消息还给操作系统
+
+消息的流动方向
+PostMessage -> 系统消息队列
+SendMessage -> WndProc
+
+CWnd* pWnd = CWnd::FramHandlePermanet(hWnd); //通过窗口句柄找到pFrame
+? 那么pFrame 到底是什么类型的变量呢
+
+
+MFC day03
+#MFC的消息映射机制(3)
+- 前两大机制:MFC的程序启动机制(1)，MFC的窗口创建机制(2)
+
+##1 消息映射机制的使用
+   1.1 类必须派生自CCmdTarget(直接或间接派生自)
+   1.2 类内必须添加声明宏 DECLARE_MESSAGE_MAP()
+   1.3 类外必须添加实现宏
+   		BEGIN_MESSAGE_MAP(theClass, baseClass)
+   		END_MESSAGE_MAP()
+   具备上述三个条件之后，就可以按照消息映射机制处理消息。
+
+##2 消息映射机制的实现
+
+```
+struct AFX_MSGMAP_ENTRY //宏展开的静态数组每个元素的类型
+{
+	UINT nMessage;    // windows message 消息ID
+	UINT nCode;         // control code or WM_NOTIFY code 通知码(控件)
+	UINT nID;              // control ID (or 0 for windows messages) 命令ID(菜单项，命令项)或控件ID
+	UINT nLastID;       // used for entries specifying a range of control id's 最后一个控件的ID
+	UINT nSig;            // signature type (action) or pointer to message 处理消息的函数的类型(确定联合体的哪个成员)
+	AFX_PMSG pfn;     // routine to call (or special value) 处理消息的函数的指针()
+};
+
+struct AFX_MSGMAP   //宏展开的静态变量的类型
+{
+#ifdef _AFXDLL
+	const AFX_MSGMAP* (PASCAL* pfnGetBaseMap)();
+#else
+	const AFX_MSGMAP* pBaseMap;
+#endif
+	const AFX_MSGMAP_ENTRY* lpEntries;
+};
+```
+
+  2.2 宏展开的代码
+  见代码
+  2.3 宏展开各部分的作用
+    _messageEntries[] - 静态数组(只占一分内存)
+        保存 消息ID 和 处理这个消息函数的 对应关系
+    messageMap - 静态变量
+    	  保存父类静态变量地址 (负责连接链表)，保存相应类的 静态数组首地址
+    GetMessageMap() - 成员虚函数
+        获取本类静态变量地址(链表头节点)
+
+类的静态变量只属于这个类，子类能够使用，但并不是说是通过继承
+
+
+
+ 3 消息映射机制的过程
+ 3.1 根据绑定，获取和hWnd绑定在一起的框架类对象地址pFrame
+ 3.2 利用pFrame调用宏展开的虚函数GetMessageMap() 获取本类静态变量地址(链表头结点pMessageMap)
+ 3.3 利用pMessageMap的第二个成员(相应类静态数组首地址)中匹配查找
+       如果找到了执行3.5，如果没找到执行3.4
+ 3.4 利用pMessageMap的第一个成员获取父类静态变量地址，如果为NULL结束查找，如果不为NULL执行3.3
+ 3.5 利用找到的数据元素的最后一个成员(类的成员函数地址)，并调用之，完成消息的处理。
+
+* 不采用虚函数的原因是：节省程序的内存，微软消息的个数较多，使用虚函数的内存开销较大。
+
+二 MFC消息的分类(根据宏的名字来分类)
+ 1 windows 平台的标准信息(例如: 键盘/鼠标/定时器)
+  ON_WM_CREATE/ON_WM_PAINT
+ 2 自定义消息
+  #define WM_MYMESSAGE WM_USER+n(<=31743)
+  ON_MESSAGE(消息ID, 成员处理函数名) - 通用宏
+ 3 命令消息(WM_COMMAND)
+ ON_COMMAND( 控件/加速键/菜单ID, 成员处理函数名)
+ 4 通知消息(WM_COMMAND)
+ ON_通知码 如 ON_EN_CHANGE
+
+
+?  DECLARE_MESSAGE_MAP() 中的静态数组的数组元素个数如何判定，这个是根据类外的定义的。
+?  子类的静态变量和父类静态变量的关系: 只是说 父类的静态变量 在子类中可以使用，并不会被子类覆盖
+    
+    如果父类 和 子类 同时声明 并 定义了对某一个消息的处理函数，在该消息到来的时候 会调用哪个消息处理函数
+?  WM_CREATE / WM_PAINT / WM_COMMAND 这三种消息在消息映射机制中所走的路线是不一样的。
+    WM_COMMAND 消息的路线相对比较复杂
+
+

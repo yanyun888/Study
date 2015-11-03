@@ -1,4 +1,7 @@
 //分析过程伪代码
+//AFX_MODULE_STATE aaa; 当前程序模块状态信息
+//AFX_MODULE_THREAD_STATE bbb;当前程序线程状态信息
+//ccc;当前程序线程状态信息
 
 CMyFrameWnd *pFrame = new CMyFrameWnd;
 pFrame->Create(NULL,"..."){
