@@ -1,6 +1,6 @@
 // MFCCmd.cpp : Defines the entry point for the application.
 //
-
+WM_CREATE
 #include "stdafx.h"
 #define WM_MYMESSAGE WM_USER+1001
 
