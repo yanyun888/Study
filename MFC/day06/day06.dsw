@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "MFCMenu"=.\MFCMenu\MFCMenu.dsp - Package Owner=<4>
+Project: "MFCDOc"=.\MFCDOc\MFCDOc.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,19 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "MFCToolBar"=.\MFCToolBar\MFCToolBar.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "WinSemaphore"=.\WinSemaphore\WinSemaphore.dsp - Package Owner=<4>
+Project: "MFCSplit"=.\MFCSplit\MFCSplit.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

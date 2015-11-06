@@ -20,7 +20,7 @@ proC是访问oracle数据的技术
 1. 编写源代码 vi XXX.pc
 2. 预编译 (把pc文件转换成c文件) proc XXX.pc
 3. 编译链接 gcc XXX.c -lclntsh (linux unix)
-           gcc XXX.c -lorasql10 (windos)
+           gcc XXX.c -lorasql10 (windows)
 4. 运行 ./a.out
 
 exec sql connect: 存放用户名密码的变量
@@ -30,7 +30,7 @@ exec sql commit work release;
 exec sql rollback work release;
 
 #宿主变量
-既能在sql语句中使用 又能在宿主语言中使用的变量宿主变量；桥梁作用的变量。
+既能在sql语句中使用 又能在宿主语言中使用的变量叫宿主变量；桥梁作用的变量。
 
 #宿主变量的类型
 char var

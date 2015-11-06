@@ -20,6 +20,7 @@
 *.dll
 *.exe
 
+
 *.obj
 *.RES
 *.idb
@@ -34,6 +35,8 @@
 *.ilk
 ##contains dll informations
 *.exp     
+
+*.bsc
 
 *.ncb
 ##recording hardware based informations, may change when environment changes
