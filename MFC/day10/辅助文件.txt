@@ -1,0 +1,49 @@
+1 控件类型的绑定
+DDX_Control(pDX,IDOK,m_wndOK);
+{
+   // 1 根据控件ID得到控件的窗口句柄
+   HWND hWndCtrl = pDX->PrepareCtrl(nIDC);
+   // rControl是m_wndOK，hWndCtrl是控件的窗口句柄
+   // 2 将变量与控件的句柄绑定
+   rControl.SubclassWindow(hWndCtrl);
+   {
+      Attach(hWnd);
+      {
+         //创建映射
+         CHandleMap* pMap = afxMapHWND(TRUE);
+         
+         pMap->SetPermanent(m_hWnd = hWndNew, this);
+         {
+           m_permanentMap[(LPVOID)h] = permOb;
+         }
+      }
+   }
+}
+// 2 值UpdateData类型的绑定
+(FALSE);  变量=>控件
+{
+   // dx对象保存对话框地址和BOOL类型的变量值
+   CDataExchange dx(this, bSaveAndValidate);
+   // 虚函数机制，调用CMyDlg::DoDataExchange()
+   DoDataExchange(&dx);
+   {
+     DDX_Text(pDX,IDC_EDIT1,m_strEdit);
+     {
+       //根据控件ID得到控件句柄
+       HWND hWndCtrl = pDX->PrepareEditCtrl(nIDC);
+       if (pDX->m_bSaveAndValidate)//FALSE
+        {
+	    //从控件的窗口获取值给变量。  控件=>变量
+	    int nLen = ::GetWindowTextLength(hWndCtrl);
+	    ::GetWindowText(hWndCtrl, value.GetBufferSetLength(nLen), nLen+1);
+	    value.ReleaseBuffer();
+	}
+	else
+	{
+	    //value就是m_strEdit,它的值是"Hello World",变量=>控件
+	    AfxSetWindowText(hWndCtrl, value);
+	}
+     }
+   }
+   
+} 

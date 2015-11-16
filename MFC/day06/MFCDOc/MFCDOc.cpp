@@ -11,7 +11,12 @@ public:
 		m_strData = "Hello World!";
 	}
 	CString m_strData;
+DECLARE_MESSAGE_MAP()
+	afx_msg void OnTest();
 };
+BEGIN_MESSAGE_MAP(CMyDoc,CDocument)
+	ON_COMMAND(ID_TEST,OnTest)
+END_MESSAGE_MAP()
 
 class CMyView:public CEditView{
 //支持动态创建
@@ -36,7 +41,9 @@ public:
 CMyWinApp theApp;
 
 
-
+void CMyDoc::OnTest(){
+	AfxMessageBox("OnText function!");
+}
 
 void CMyView::OnInitialUpdate(){
 	//获取与视图所关联的文档

@@ -93,7 +93,7 @@ struct CCreateContext {
      3.3 CFrameWnd::InitialUpdateFrame(CDocument* pDoc, BOOL bMakeVisible)
             -  框架类的初始化更新函数
           在框架窗口创建之后调用，会引起所有与之关联了视图OnInitialUpdate函数的调用。
-
+        
 
 
 

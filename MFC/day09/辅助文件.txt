@@ -1,0 +1,62 @@
+1 写对象的过程
+  ar<<pStu;
+  {
+     ar.WriteObject(pOb);
+     {
+        // 1 获取当前类的运行时类信息
+        CRuntimeClass* pClassRef = pOb->GetRuntimeClass();
+        // 2 将类的信息写入到文件
+	WriteClass(pClassRef);
+	{
+	   pClassRef->Store(*this);
+	   {
+	     //将类的版本、类名称长度以及类名称依次写入到文件
+	     WORD nLen = (WORD)lstrlenA(m_lpszClassName);
+	     ar << (WORD)m_wSchema << nLen;
+	     ar.Write(m_lpszClassName, nLen*sizeof(char));
+	   }
+	}
+	// 3 将类的成员变量的值依次写入到文件
+        ((CObject*)pOb)->Serialize(*this);
+        {
+           ar<<m_strName<<m_nAge;
+        }
+     }
+  }
+2 读对象的过程
+ ar>>pStu;
+ {
+    ar.ReadObject(RUNTIME_CLASS(CStudent);
+    {
+       	// 1 读取类的运行时信息
+       	CRuntimeClass* pClassRef = ReadClass(...,&nSchema, &obTag);
+       	{
+       	   pClassRef = CRuntimeClass::Load(*this,...);
+       	   {
+       	      //依次读取类的版本、类名称长度和类名称 
+       	      ar >> wTemp;
+       	      ar >> nLen;
+       	      szClassName[nLen] = '\0';
+       	      //遍历链表，根据类名查找得到运行时类信息的地址，并返回
+       	      for (pClass = pModuleState->m_classList; pClass != NULL;
+		pClass = pClass->m_pNextClass)
+	      {
+		if (lstrcmpA(szClassName, pClass->m_lpszClassName) == 0)
+		{
+			AfxUnlockGlobals(CRIT_RUNTIMECLASSLIST);
+			return pClass;
+		}
+	      }
+       	   }
+      	} 
+      	// 2 动态创建对象
+      	pOb = pClassRef->CreateObject();
+      	// 3 从文件中读取成员变量的值赋值给新创建的对象
+      	pOb->Serialize(*this);
+      	{
+      	  ar>>m_strName>>m_nAge;
+      	}
+      
+
+    }
+ }
