@@ -2,12 +2,18 @@
 #files that will be ignored by git
 
 
-#Common document files
+# Common document files
 *.zip
 *.ppt
 *.pptx
+*.doc
+*.docx
+*.dot
+*.dotx
+*.pdf
+*.PDF
 
-#Unix ignored files
+# Unix ignored files
 *.out
 *.o
 *.cpp~
@@ -15,7 +21,7 @@
 *.md~
 *~
 
-#Windows ignored files
+# Windows ignored files
 *.lib
 *.dll
 *.exe
@@ -24,23 +30,30 @@
 *.obj
 *.RES
 *.idb
-##app studio file, resource file
+
+## app studio file, resource file
 *.aps
-##program datebase	
+## program datebase	
 *.pdb
-##pre-compiled header
+## pre-compiled header
 *.pch
 *.res
 *.sbr
 *.ilk
-##contains dll informations
+## contains dll informations
 *.exp     
 
 *.bsc
 
 *.ncb
-##recording hardware based informations, may change when environment changes
-*opt
-##compile information (compiled errors and warning saved here)
-*plg
+## recording hardware based informations, may change when environment changes
+*.opt
+## compile information (compiled errors and warning saved here)
+*.plg
 
+
+# ActiveX COM related files
+*.tlb
+*.trg
+*.exp
+*.ocx
