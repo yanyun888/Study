@@ -90,6 +90,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\mcd.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -109,6 +113,10 @@ SOURCE=.\UseMcdDlg.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\mcd.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\Resource.h
@@ -144,3 +152,12 @@ SOURCE=.\ReadMe.txt
 # End Source File
 # End Target
 # End Project
+# Section UseMcd : {E3098E73-601F-4527-89A8-70833E9CC975}
+# 	2:5:Class:CMcd
+# 	2:10:HeaderFile:mcd.h
+# 	2:8:ImplFile:mcd.cpp
+# End Section
+# Section UseMcd : {32D4E900-934A-43FF-92F2-CCCF102E5397}
+# 	2:21:DefaultSinkHeaderFile:mcd.h
+# 	2:16:DefaultSinkClass:CMcd
+# End Section
