@@ -80,6 +80,8 @@ void CMyForm::OnAdd()
 	theCtrl.SetItemText(nItem,1,m_strAge);
 	theCtrl.SetItemText(nItem,2,m_strAddr);
 	++nItem;
-	//CString strMsg();
+	CString strInfo="添加新学员：";
+	strInfo+=m_strName;
+	m_pEditView->SetWindowText(strInfo);
 
 }

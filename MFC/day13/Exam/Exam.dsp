@@ -110,6 +110,14 @@ SOURCE=.\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MyForm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyListView.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -132,6 +140,14 @@ SOURCE=.\ExamView.h
 # Begin Source File
 
 SOURCE=.\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyForm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyListView.h
 # End Source File
 # Begin Source File
 

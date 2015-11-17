@@ -102,6 +102,14 @@ SOURCE=.\MFCThreadDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MyDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyThread.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -116,6 +124,14 @@ SOURCE=.\MFCThread.h
 # Begin Source File
 
 SOURCE=.\MFCThreadDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyDialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyThread.h
 # End Source File
 # Begin Source File
 
