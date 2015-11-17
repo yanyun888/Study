@@ -20,3 +20,12 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
+
+# C/C++ files
+*.c text
+*.cpp text
+
+
+
+# Markdown and Notes
+*.md text
