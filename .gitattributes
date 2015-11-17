@@ -25,7 +25,6 @@
 *.c text
 *.cpp text
 
-
-
 # Markdown and Notes
 *.md text
+*.mkd text
