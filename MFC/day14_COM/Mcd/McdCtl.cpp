@@ -279,5 +279,5 @@ void CMcdCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	FireMyMsg();
-	COleControl::OnRButtonDown(nFlags, point);
+//	COleControl::OnRButtonDown(nFlags, point);
 }

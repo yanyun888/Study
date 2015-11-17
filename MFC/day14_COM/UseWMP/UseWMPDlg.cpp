@@ -1,9 +1,9 @@
-// UseMcdDlg.cpp : implementation file
+// UseWMPDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "UseMcd.h"
-#include "UseMcdDlg.h"
+#include "UseWMP.h"
+#include "UseWMPDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,44 +57,38 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CUseMcdDlg dialog
+// CUseWMPDlg dialog
 
-CUseMcdDlg::CUseMcdDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CUseMcdDlg::IDD, pParent)
+CUseWMPDlg::CUseWMPDlg(CWnd* pParent /*=NULL*/)
+	: CDialog(CUseWMPDlg::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CUseMcdDlg)
-	m_num1 = 0;
-	m_num2 = 0;
+	//{{AFX_DATA_INIT(CUseWMPDlg)
+		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CUseMcdDlg::DoDataExchange(CDataExchange* pDX)
+void CUseWMPDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CUseMcdDlg)
-	DDX_Control(pDX, IDC_MCDCTRL1, m_wndMcd);
-	DDX_Text(pDX, IDC_EDIT1, m_num1);
-	DDX_Text(pDX, IDC_EDIT2, m_num2);
+	//{{AFX_DATA_MAP(CUseWMPDlg)
+	DDX_Control(pDX, IDC_OCX2, m_wndPlayer);
 	//}}AFX_DATA_MAP
 }
 
-BEGIN_MESSAGE_MAP(CUseMcdDlg, CDialog)
-	//{{AFX_MSG_MAP(CUseMcdDlg)
+BEGIN_MESSAGE_MAP(CUseWMPDlg, CDialog)
+	//{{AFX_MSG_MAP(CUseWMPDlg)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_CALCULATE, OnCalculate)
-	ON_BN_CLICKED(IDC_DIRECTION, OnDirection)
-	ON_BN_CLICKED(IDC_ABOUT, OnAbout)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CUseMcdDlg message handlers
+// CUseWMPDlg message handlers
 
-BOOL CUseMcdDlg::OnInitDialog()
+BOOL CUseWMPDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -122,11 +116,11 @@ BOOL CUseMcdDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	// TODO: Add extra initialization here
-	
+	m_wndPlayer.SetUrl("d:/test.m4v");
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void CUseMcdDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CUseWMPDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -143,7 +137,7 @@ void CUseMcdDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void CUseMcdDlg::OnPaint() 
+void CUseWMPDlg::OnPaint() 
 {
 	if (IsIconic())
 	{
@@ -170,47 +164,7 @@ void CUseMcdDlg::OnPaint()
 
 // The system calls this to obtain the cursor to display while the user drags
 //  the minimized window.
-HCURSOR CUseMcdDlg::OnQueryDragIcon()
+HCURSOR CUseWMPDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
-}
-
-void CUseMcdDlg::OnCalculate() 
-{
-	// TODO: Add your control notification handler code here
-	UpdateData(true);
-	m_wndMcd.SetNumbers(m_num1,m_num2);
-}
-
-void CUseMcdDlg::OnDirection() 
-{
-	// TODO: Add your control notification handler code here
-	BOOL bRet = m_wndMcd.GetDirection();
-	m_wndMcd.SetDirection(!bRet);
-}
-
-void CUseMcdDlg::OnAbout() 
-{
-	// TODO: Add your control notification handler code here
-	m_wndMcd.AboutBox();
-}
-
-BEGIN_EVENTSINK_MAP(CUseMcdDlg, CDialog)
-    //{{AFX_EVENTSINK_MAP(CUseMcdDlg)
-	ON_EVENT(CUseMcdDlg, IDC_MCDCTRL1, -600 /* Click */, OnClickMcdctrl1, VTS_NONE)
-	ON_EVENT(CUseMcdDlg, IDC_MCDCTRL1, 1 /* MyMsg */, OnMyMsgMcdctrl1, VTS_NONE)
-	//}}AFX_EVENTSINK_MAP
-END_EVENTSINK_MAP()
-
-void CUseMcdDlg::OnClickMcdctrl1() 
-{
-	// TODO: Add your control notification handler code here
-	MessageBox("库存的click事件");
-}
-
-void CUseMcdDlg::OnMyMsgMcdctrl1() 
-{
-	// TODO: Add your control notification handler code here
-	MessageBox("用户自定义的click事件");
-	
 }

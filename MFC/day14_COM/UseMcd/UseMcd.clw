@@ -30,7 +30,7 @@ ImplementationFile=UseMcdDlg.cpp
 Filter=D
 BaseClass=CDialog
 VirtualFilter=dWC
-LastObject=IDC_ABOUT
+LastObject=IDC_MCDCTRL1
 
 [CLS:CAboutDlg]
 Type=0

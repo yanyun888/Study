@@ -13,6 +13,10 @@
     - [2.5 控件的注册](#25-控件的注册)
     - [2.6 控件的测试](#26-控件的测试)
     - [2.7 控件的使用](#27-控件的使用)
+    - [2.8 Windows Media Player 控件的使用](#28-windows-media-player-控件的使用)
+- [3 COM的数据类型](#3-com的数据类型)
+    - [3.1 BSTR-COM的字符串类型](#31-bstr-com的字符串类型)
+    - [3.2 VARIANT-COM的可变类型](#32-variant-com的可变类型)
 
 <!-- /MarkdownTOC -->
 
@@ -74,5 +78,28 @@
 
 ### 2.7 控件的使用
 - 添加ActiveX控件，和MFC控件的使用方式相同。
+    + 在桌面程序中使用控件
+    + 在Web程序中使用控件
+
+### 2.8 Windows Media Player 控件的使用
+
+## 3 COM的数据类型
+### 3.1 BSTR-COM的字符串类型
+- 创建字符串 `SysAllocString`
+- 使用字符串
+- 释放字符串 `SysFreeString`
+- BSTR的封装类：
+    + 使用封装类能够简化变量的操作，构造和析构
+    + 微软的ATL封装类，CComBSTR  `#include <atlbase.h>`
+        * ActiveX Template Library , 类名称 CComBSTR
+    + C++库的封装类，`#include <comdef.h>`
+        * 类名称_bstr_t
+
+### 3.2 VARIANT-COM的可变类型
+- 本质是一个结构体。
+- VARIANT封装类
+    + ATL库：CComBSTR
+    + C++库：_variant_t 需要显示的指定long类型
+
 
 
