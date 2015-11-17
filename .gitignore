@@ -4,14 +4,7 @@
 
 # Common document files
 *.zip
-*.ppt
-*.pptx
-*.doc
-*.docx
-*.dot
-*.dotx
-*.pdf
-*.PDF
+
 
 # Unix ignored files
 *.out
