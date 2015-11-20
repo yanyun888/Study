@@ -1,0 +1,100 @@
+1. 引用与指针有什么区别？
+答：引用的本质就是指针，指针可以不给初值，引用必须给初值
+有指针的指针，没有引用的引用，
+
+
+2. 堆栈溢出一般是由什么原因导致的？
+答：函数的无限循环
+
+3. 什么函数不能声明为虚函数？
+答：普通函数(非成员函数)，静态成员函数，内联成员函数，构造函数，友元函数
+普通函数可以进行重载覆盖，静态成员函数
+
+4. 写出float x 与“零值”比较的if语句。
+答：float和double类型的变量不能使用`==`对其进行相等判断，
+    `if(x>-0.00001 && x < 0.00001)`
+    也可以使用绝对值进行比较。
+    `#include <math.h>`
+    `if( abs(x) < 1e-06 )`
+
+5. 不能做switch()的参数类型是：
+答：实数型，（非整数），switch后面只能带自动转换为整形的类型(int, char)
+    实数型不能自动转换为整数型(如float等等)，在可以强制转换，但是会出现丢失精度的问题。
+
+6. 头文件中的 ifndef/define/endif干什么用? 预处理
+答：防止头文件的重复包含引用
+
+7. #include <filename.h> 和 #include "filename.h" 有什么区别?
+答：使用尖括号引用头文件会优先在系统目录下进行查找，使用双引号会优先在当先工程目录下进行查找
+
+8. 在C++ 程序中调用被 C 编译器编译后的函数，为什么要加 extern “C”声明?
+答：C++语法为了实现函数的重载，会对函数名进行换名，大多能在换名之后的函数名中体现出函数的参数；
+    而C语法不会对函数名进行更改。所以，为了使C++编译器能够识别C编译器生成的二进制文件，
+    需要加extern "C"声明，加了extern "C" 声明的函数无法重载。
+
+9.
+char str1[] = "abc";
+char str2[] = "abc";
+
+const char str3[] = "abc";
+const char str4[] = "abc";
+
+const char *str5 = "abc";
+const char *str6 = "abc";
+
+char *str7 = "abc";
+char *str8 = "abc";
+
+cout << ( str1 == str2 ) << endl;
+cout << ( str3 == str4 ) << endl;
+cout << ( str5 == str6 ) << endl;
+cout << ( str7 == str8 ) << endl;
+
+结果是：
+false，false（？），true，true
+0,0,1,1
+如果需要输出true和false，需要加boolalpha
+
+10.
+main()
+{
+   int a[5]={1,2,3,4,5};
+   int *ptr=(int *)(&a+1);
+   printf("%d,%d",*(a+1),*(ptr-1));
+}
+答：2，5
+对数组取地址得到的是 int[5] , 一共占据20个字节
+
+
+11. 交换两个变量的值，不使用第三个变量。即a=3,b=5,交换之后a=5,b=3;
+答：a=a+b;  b=a-b;  a=a-b;  //仅限整型交换
+
+12. 列举几种进程的同步机制，并比较其优缺点。
+答：
+
+13. 进程死锁的原因和4个必要条件
+答：
+
+14. 要对绝对地址0x100000赋值，我们可以用(unsigned int*)0x100000 = 1234;
+那么要是想让程序跳转到绝对地址是0x100000去执行，应该怎么做？
+答：使用函数指针？
+void(fun*)(void) = 0x10 0000;
+(*fun) ();
+? 如何对函数指针进行赋值
+
+15.
+unsigned char *p1;
+unsigned long *p2;
+p1=(unsigned char *)0x801000;
+p2=(unsigned long *)0x810000;
+请问
+p1+5=______;0x801005
+p2+5=______;0x810014  -- 注意需要转化为16进制
+
+16、设有以下说明和定义：
+typedef union {long i; int k[5]; char c;} DATE;
+struct data { int cat; DATE cow; double dog;} too;
+DATE max;
+则语句 printf("%d",sizeof(too)+sizeof(max));的执行结果是：______52
+sizeof(DATE) = 20;
+sizeof(max) = 4+20+8;

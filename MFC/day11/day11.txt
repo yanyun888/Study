@@ -1,0 +1,77 @@
+﻿
+一 MFC控件
+1 静态控件-包括图片、静态文本和分组框。ID默认都是IDC_STATIC,很少在代码
+           中操作该类控件。如果需要在代码中操作该类控件时，首先要将控件
+           的ID设置为唯一。
+2 按钮控件-包括下压式按钮、单选按钮和复选按钮。对应的控件类都是CButton
+           在同一个对话框中有多个单选分组时，需要设置控件的Group属性。
+3 组合框控件和列表框控件
+3.1 组合框控件
+    控件类是CComboBox类。可以在多个选项中选择一项，也可以接受用户的输入
+    可以通过属性的方式添加它的选项。
+3.2 列表框控件
+    控件类是CListBox类。可以在多个选项中选择一项或者选择多项。
+    3.2.1 常用函数
+    1 添加选项
+      CListBox::AddString
+    2 获取当前选项索引值，如果没有选中，返回 LB_ERR
+      CListBox::GetCurSel
+    3 根据索引值得到文本
+      CListBox::GetText
+    4 删除选项
+      CListBox::DeleteString
+    5 获取选项的数量
+      CListBox::GetCount
+    6 清空选项
+      CListBox::ResetContent
+4 动画控件
+  控件类是CAnimateCtrl类。
+5 播放动画的例子
+5.1 CFileDialog类-文件对话框
+  5.1.1 构造函数
+  CFileDialog(
+    BOOL bOpenFileDialog,//TRUE:打开；FALSE:另存为。
+    LPCTSTR lpszDefExt = NULL,//默认的扩展名
+    LPCTSTR lpszFileName = NULL, //默认的文件名
+    DWORD dwFlags = OFN_HIDEREADONLY , //窗口的风格样式
+    LPCTSTR lpszFilter = NULL, //过滤字符串(文件类型过滤)
+    CWnd* pParentWnd = NULL
+  );
+  lpszFilter表示文件类型，格式：
+   每项以"|"分割，整个字符串以"||"结束。
+   每项由两部分组成，这两部分以"|"分割。
+
+  5.1.2 创建和显示
+        `CFileDialog::DoModal`
+  5.1.3 获取文件名称
+        `CFileDialog::GetFileName`
+  5.1.4 获取文件路径
+        `CFileDialog::GetPathName`
+6 旋转按钮、进度条和滑块控件
+6.1 旋转按钮-控件类是CSpinButtonCtrl类
+    6.1.1 设置/获取控件的数值范围
+          `SetRange32/GetRange32`
+    6.1.2 设置控件的增量
+          BOOL SetAccel(
+           int nAccel, //数组的长度
+           UDACCEL* pAccel//数组的指针
+           );
+    6.1.2 设置/获取位置(数值)
+          SetPos/GetPos
+
+6.2 进度条-控件类是CProgressCtrl类
+    6.2.1 设置/获取控件的数值范围
+          SetRange32/GetRange32
+    6.2.2 设置控件的步长
+          SetStep/GetStep
+    6.2.3 设置/获取位置(数值)
+          SetPos/GetPos
+    6.2.4 前进一个步长
+          StepIt
+6.3 滑块-控件类是CSliderCtrl类
+    6.3.1 设置/获取控件的数值范围
+          SetRange/GetRange
+    6.3.2 SetLineSize/GetLineSize
+          SetPageSize/GetPageSize
+7
+

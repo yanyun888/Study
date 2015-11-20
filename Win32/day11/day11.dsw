@@ -15,6 +15,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "ClassDll"=.\ClassDll\ClassDll.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Clib"=.\Clib\Clib.dsp - Package Owner=<4>
 
 Package=<5>
@@ -51,6 +63,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "UseClassDll"=.\UseClassDll\UseClassDll.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "UseClib"=.\UseClib\UseClib.dsp - Package Owner=<4>
 
 Package=<5>
@@ -64,6 +88,18 @@ Package=<4>
 ###############################################################################
 
 Project: "UseCppDll"=.\UseCppDll\UseCppDll.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "UseShow"=.\UseShow\UseShow.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
