@@ -1,0 +1,107 @@
+/*File Name: LogDao.h
+**Author: 
+**Version: 
+**Created Time: 15/09/28-14:11  */
+ 
+ 
+#include "OracleDao.h"
+#include <iostream>
+using namespace std;
+
+exec sql include sqlca;
+
+exec sql begin declare section;
+	sql_context g_context; //多线程切换
+	char g_userpwd[30];
+	/*
+	create sequence dmslog_id;
+	create table dmslog(
+		id          number primary key,
+		logname     varchar2(32),
+		logip       varchar2(32),
+		pid         number,
+		logintime   date,
+		longouttime date,
+		durations   number);
+	*/
+	struct DLogRec{
+		char logname[32];
+		char logip[32];
+		int  pid;
+		char logintime[52];
+		char logouttime[52];
+		int  durations;
+	} g_log = {"","",0,"","",0};
+//宿主变量
+exec sql end declare section;
+
+OracleDao::OracleDao(string const& username,string const& password)
+	throw (DBException){
+		cout << "打开数据库开始..." << endl;
+		exec sql enable threads;
+		exec sql context allocate :g_context;
+		exec sql context use g_context;
+		sprintf(g_userpwd,"%s/%s\n",username.c_str(),password.c_str() );
+		exec sql connect :userpwd;
+		if (sqlca.sqlcode){
+			ostringstream oss;
+			oss << "ORA" << showops << sqlca.sqlcode;
+			throw DBException(oss.str());
+		}
+
+
+		cout <<  "打开数据库完成。" << endl;
+	}
+
+OracleDao::~OracleDao(void){
+	cout << "关闭数据库开始..." << endl;
+	exec sql commit work release;
+	cout << "关闭数据库完成。" << endl;
+
+}
+void OracleDao::Insert(MLogRec const& log) throw (DBException){
+	cout << "插入数据库开始... " << endl;
+	strcpy (g_log.logname,log.logname);
+	strcpy (g_log.ip,log.ip);
+	g_log.pid = log.pid;
+	time_t t = log.logintime;
+	tm* local = localtime (&t);
+	sprintf(g_log.logintime,"%04d-%02d-%02d %02d:%02d:%02d",
+			local->tm_year + 1900,
+			local->tm_mon + 1,
+			local->tm_mday,
+			local->tm_hour,
+			local->tm_min,
+			local->tm_sec);
+	t = log.logouttime;
+	local = localtime (&t);
+	sprintf(g_log.logouttime,"%04d-%02d-%02d %02d:%02d:%02d",
+			local->tm_year + 1900,
+			local->tm_mon + 1,
+			local->tm_mday,
+			local->tm_hour,
+			local->tm_min,
+			local->tm_sec);
+	g_log.durations = log.durations;
+	exec sql insert into dmslog value(
+			dmslog_id.nextval,
+			::g_log.logname,
+			::g_log.ip,
+			::g_log.pid,
+			todate(::g_log.logintime,'yyyy-mm-dd hh24:mi:ss'),
+			todate(::g_log.logouttime,'yyyy-mm-dd hh24:mi:ss'),
+			::g_log.durations
+			);
+	if (sqlca.sqlcode){
+		ostringstream oss;
+		oss << "ORA" << showops << sqlca.sqlcode;
+		throw DBException(oss.str());
+	}
+	exec sql commit;
+
+	cout << log << endl;
+	cout << "插入数据库完成。" << endl;
+}
+
+
+
