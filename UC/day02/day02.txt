@@ -1,0 +1,94 @@
+
+
+
+环境变量
+CPATH/C_INCLUDE_PATH
+CPLUS_INCLUDE_PATH
+
+LIBRARY_PATH    库文件
+LD_LIBRARY_PATH 共享库文件
+
+include<>
+include""
+直接加入inlucde缺点在于，一旦头文件的路径发生改变，则必须更改源程序
+更改CPATH,C_INCLUED_PATH 加入头文件查找目录
+缺点在于多个工程时，配置环境变量会引起冲突
+c99 -I 编译选项 查找头文件(推荐使用此方法)
+
+库文件的概念和使用
+
+库文件的分类：静态库和共享库
+
+使用静态库时候，直接将代码指令拷贝过来，不需要跳转，执行效率较高
+可以脱离静态库文件，目标文件比较大，修改和维护都不方便
+
+ldd a.out   察看a.out依赖的共享库
+gcc -static xxx.c 强制使用静态库
+
+静态库文件的生成
+ar -r lib___.a ___.o
+-r 表示插入
+静态库文件名和库名是两个概念
+将o文件 归档为a文件
+
+静态库的使用步骤
+直接链接
+cc ___.o lib___.a 
+
+使用编译选项进行链接
+cc main.o -l 库名 -L 所在位置
+
+配置环境变量
+LIBRARY_PATH=$PATH:. 
+
+共享库的生成方式
+cc -c -fpic add.c   fpic表示小模式
+gcc -shared add.o -o libadd.so
+
+共享库的使用方式
+cc main.c libadd.so
+cc main.c - l add -L 
+
+export LD_LIBRARY_PATH
+
+使用共享库时，必须配置环境变量LD_LIBRARY_PATH,
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
+
+LIBRARY_PATH主要用于解决编译链接时找不到库文件的问题
+LD_LIBRARY_PATH解决的是运行时的共享库的位置
+
+共享库文件的动态加载
+void dlopen(const char *filename,int flag);
+int dlclose(void *handle);
+void* dlsym(void *handle,const char* symbol);
+char* dlerror(void);
+使用上诉四个函数时，需要使用 -ldl编译指令
+
+
+C语言的错误表现形式
+一般来说，c语言是通过函数的返回值来体现的
+返回值为int时，如果函数的计算结果不可能为负数时，返回-1表示出错，返回其他值表示正常
+如果对于返回值类型为int的函数来说，如果函数的计算结果有可能是负数时，使用指针将函数的返回值将计算结果带出去，仍然用-1表示出错
+
+对于返回值类型是指针类型的函数来说，如果函数调用出错了，则返回NULL，否则返回有效地址
+如果不考虑函数是否会出错，返回值用void
+
+练习：
+1.生成1~10之间的随机数，如果生成的随机数是5，则返回错误
+2.判断两个整形参数的的大小，并且返回最大值，如果两个参数相等，则返回错误
+3.判断返回的字符串是否是”error“,如果不是则返回”ok“，如果是则返回错误、
+4.打印传入的字符串即可
+
+作业：
+编写两个功能函数，实现空心菱形和实心菱形；
+将这两个动态库函数，分别打包成静态库和共享库，共享库的动态调用。
+
+明日
+C语言错误处理
+环境表的概念和使用
+linux内存管理
+
+
+
+
+

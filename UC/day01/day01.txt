@@ -1,0 +1,66 @@
+
+Unix/Linux的基本概述和开发方式。
+Unix/Linux的内存管理技术。
+Unix/Linux的文件管理和目录操作
+Unix/Linux的进程管理
+Unix/Linux的信号处理-信号用来终止一个程序
+Unix/Linux的进程间通信
+Unix/Linux的网络编程
+Unix/Linux的多线程编程
+
+
+
+Unix系统简介，
+C语言诞生与1972年
+Unix系统具有多用户，多任务，支持多处理器的特点
+
+linux是自由免费，开放源代码的类Unix操作系统
+
+环境变量的概念
+
+GCC GNU C Compiler/GNU Compiler Collection
+
+编译，将高级源代码编译成
+gcc -E xxx.c -o xxx.i 预处理
+gcc -S xxx.i编译处理
+gcc -c xxx.s汇编处理
+gcc xxx.o 主要用于链接，默认生成a.out
+
+-std    用于指定具体的C标准
+-v      用于察看gcc版本信息
+-Wall
+-Werror
+
+-x      用于指定代码的满城语言
+-g      生成gdb相关的调试信息
+-O      对代码进行优化处理
+
+
+.a  静态库文件
+.so 共享库文件
+
+#line   更改行号
+#error  产生错误信息
+#warning 产生警告信息
+
+#if     在预编译阶段进行判断
+if      在程序的运行阶段进行条件判断
+
+#pragma GCC dependency XXX
+xxx是某个文件，如果xxx的保存时间晚于当前文件，则警告
+
+#pragma GCC poison 标示符
+将指定的标示符设置成毒药
+
+#pragma pack(push)
+#pargma pack(pop)
+#pragma pack(整数n)
+用于设置对齐和补齐的标志
+n不能为3，对齐和补齐超过4还是按照4进行计算，
+
+环境变量的概念和使用
+环境变量就是指用于存放和系统环境/软件环境相关信息的变量
+ 
+export PATH=$PATH:.
+source ~/.bashrc    让当前配置文件生效 
+ 
