@@ -4,19 +4,20 @@
 
 <!-- MarkdownTOC -->
 
-- [1 概念](#1-概念)
-- [2 ActiveX控件的开发、注册、测试、和使用](#2-activex控件的开发、注册、测试、和使用)
-    - [2.1 使用MFC的向导开发ActiveX控件](#21-使用mfc的向导开发activex控件)
-    - [2.2 在Ctrl类的OnDraw函数中完成控件的绘制](#22-在ctrl类的ondraw函数中完成控件的绘制)
-    - [2.3 在第一个接口中添加方法和属性DMcd](#23-在第一个接口中添加方法和属性dmcd)
-    - [2.4 在第二个接口中添加事件 DMcdEvents，AddEvent](#24-在第二个接口中添加事件-dmcdevents，addevent)
-    - [2.5 控件的注册](#25-控件的注册)
-    - [2.6 控件的测试](#26-控件的测试)
-    - [2.7 控件的使用](#27-控件的使用)
-    - [2.8 Windows Media Player 控件的使用](#28-windows-media-player-控件的使用)
-- [3 COM的数据类型](#3-com的数据类型)
-    - [3.1 BSTR-COM的字符串类型](#31-bstr-com的字符串类型)
-    - [3.2 VARIANT-COM的可变类型](#32-variant-com的可变类型)
+- 1 概念
+- 2 ActiveX控件的开发、注册、测试、和使用
+    - 2.1 使用MFC的向导开发ActiveX控件
+    - 2.2 在Ctrl类的OnDraw函数中完成控件的绘制
+    - 2.3 在第一个接口中添加方法和属性DMcd
+    - 2.4 在第二个接口中添加事件 DMcdEvents，AddEvent
+    - 2.5 控件的注册
+    - 2.6 控件的测试
+    - 2.7 控件的使用
+    - 2.8 Windows Media Player 控件的使用
+    - 2.9 WTL控件(Windows template library)
+- 3 COM的数据类型
+    - 3.1 BSTR-COM的字符串类型
+    - 3.2 VARIANT-COM的可变类型
 
 <!-- /MarkdownTOC -->
 
@@ -82,6 +83,9 @@
     + 在Web程序中使用控件
 
 ### 2.8 Windows Media Player 控件的使用
+
+### 2.9 WTL控件(Windows template library)
+- Web 程序中使用的COM 控件，轻量级
 
 ## 3 COM的数据类型
 ### 3.1 BSTR-COM的字符串类型
