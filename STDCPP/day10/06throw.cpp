@@ -28,6 +28,7 @@ private:
 	string m_file;
 	int m_line;
 };
+
 int func3(void){
 	A a;
 	FILE * fp=fopen("none.txt","r");
@@ -69,7 +70,6 @@ int main(){
 			cout << "文件打开失败" <<endl;
 		}
 		return -1;
-
 	}
 	catch(FileError ex){
 		cout << "打开文件失败!" << endl;

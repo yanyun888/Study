@@ -1,0 +1,110 @@
+
+day05
+
+内存管理的操作，
+系统调用的概念
+文件的概念和操作
+
+内存管理的相关函数
+#include<stdio.h>
+void* sbrk(intptr_t increment);
+如果
+increment>0表示申请内存；返回申请到的内存的首地址
+increment<0表示释放内存；返回释放之前的内存尾地址
+increment==0表示获取当前内存的末尾地址
+
+void*(-1)，起始位置由系统维护，
+
+内存映射的基本单位是：内存页
+
+使用sbrk函数申请比较小的内存时，操作系统会分配一个内存页；
+当释放内存时按照整页内存来回收；当内存被全部释放时，内存页被全部收回,
+这样做比较节省内存，但是效率会降低
+
+
+int brk(void* addr);
+根据参数所指定的地址去调整动态内存的大小。
+addr>原末尾地址，表示申请内存空间，
+addr<原末尾地址，表示释放内存空间。
+
+使用sbkr申请内存比较方便，使用brk释放内存比较方便，因此一般两个函数搭配使用比较方便。
+
+malloc/realloc/calloc的底层调用的是brk和sbrk，
+
+#inlcude<sys/mman.h> ---mapmanager.h
+void* mmap(void* addr,size_t length,int prot,int flags,int fd,off_t offset);函数
+addr建立映射的首地址，
+prot内存权限
+flag内存标志位，共享的，私有的；还可以按位或以下的值：
+MAP_ANONYMOUS - 表示到映射到物理内存。
+fd 	文件描述符
+offset	文件偏移量，映射到物理内存时直接给0；
+返回值：成功返回映射区域首地址，失败返回(void*)-1或MS
+
+int mnummap(void* addr,int size);
+
+
+内存管理的之间的层次关系
+
+应用程序->程序的业务逻辑
+	|
+STL标准模版库->容器和内存分配器，自动管理
+	|
+标准C++语言->new,delete(关键字)
+	|
+标准C语言->malloc,free
+	|
+POSIX标准->sbrk,brk
+	|
+Unix/Linux->mmap,munmap
+(用户层)
+(内核层)
+Unix/Linux操作系统->vmalloc,kmalloc
+
+
+系统调用的概念
+本质上就是由操作系统提供的一系列API函数，通过系统调用函数可以将程序通过软中断的方式，
+由用户空间切换到内核空间，从而操作内核以及硬件设备，等处理完毕后，又会自动切换到用户空间。
+
+
+文件的概念和基本操作
+基本概念
+在Unix/Linux系统中，几乎把一切都看作文件，因此对于文件的操作也可以适用于所有的输入输出设备，
+包括目录也叫做文件。
+
+/dev/null - 空设备文件(掌握)
+
+echo hello > /dev/null		丢弃
+cat /dev/null > a.txt		清空
+
+/dev/tty - 输入输出设备，默认表示终端(了解)
+
+基本操作(重中之重)
+标准C:fopen()/fclose()/fread()/fwrite()/fseek()
+UC:open()/close()/read()/write()/seek()
+
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+
+int open(const char* filepath,int flags);
+int open(const char* filepath,int flags,mode_t mode);
+int create(const char* filepath,mode_t mode );
+
+flag标志位必须包含
+O_RDONLY/O_WRONLY/O_RDWR
+还可以按位或
+O_APPEND
+O_CREAT - 存在则打开，不存在则创建
+O_EXCL - 与O_CREAT一起使用，存在则失败
+O_TRUNC - 文件存在，则清空文件的内容
+
+mode参数用来指定创建新文件是的权限
+如果打开一个已经存在的文件则不需要该参数
+
+create跟open函数比较像,加上参数O_CREAT|O_WRONLY|O_TRUNC
+
+硬链接数
+
+int close(int fd);
+

@@ -1,0 +1,97 @@
+
+day08.txt
+
+获得文件大小的两种方法。
+
+文件信息
+int stat(const char* path,struct stat* str);
+int fstat(int fd,struct stat* str);
+
+struct stat{
+    mode_t st_mode;//文件的类型和权限
+    off_t st_size;//文件的大小
+    time_t st_mtime;//最后一次修改时间
+}
+用于获取文件的状态信息
+
+进行预处理查找
+mode_t 是 unsigned int
+off_t 是 long int
+time_t 是 long int
+
+char* ctime(const time_t* time);
+struct tm* localtime(const time_t* timep);
+
+
+int access(cosnt char *pathname,int mode);
+F_OK/R_OK/W_OK/X_OK--文件是否存在，是否可读，是否可写，是否可执行。
+
+chmod/truncate
+#include<sys/stat.h>
+int chmod(const char* path,mode_t mode);
+int fchmod(int fd,mode_t mode);
+修改文件的权限
+
+ftruncate()
+如果文件的长度变小了，则会丢失数据，如果文件的长度变大了，文件被扩展，多出来的空间用\0填充
+
+umask函数(了解)
+系统会默认屏蔽002
+mode_t old = umask(0040);
+返回的是旧的umask
+只对文件的创建有效
+umask的实际运算实现是按位取反再按位求与
+
+mmap/munmap主要用于建立文件/设备到内存的映射
+映射的权限不要和文件的打开权限有所冲突，应该保持一致。
+使用文件内存映射主要是为了方便操作文件；可以像操作内存一样操作文件（通过指针）。
+
+
+I/O重定向
+a.out 0<i.txt 1>o.txt
+在这个表示关闭0代表的输入，用i.txt替代；
+关闭1代表的输出，用o.txt替代。
+?这样的语法是否只是针对io的？
+
+用户编号和用户组编号。
+
+文件操作的其他函数
+
+link();主要用于建立硬链接
+unlink();删除硬链接
+?建立硬链接在实际中的应用是什么？
+
+rename();重命名
+remove();删除文件
+
+
+硬链接；i节点和文件名称的链接关系
+软链接/符号链接：快捷方式
+
+#inlcude<dirent.h>
+DIR* opendir(const char* path);
+struct drient* readdir(DIR* dirp);
+
+struct dirent {
+	ino_t d_ino;       /* inode number */
+	off_t d_off;       /* offset to the next dirent */
+	unsigned short d_reclen;    /* length of this record */
+	unsigned char  d_type;      /* type of file; not supported
+								   by all file system types */
+	char d_name[256]; /* filename */
+};
+
+directory entry ==> dirent
+
+int closedir(DIR *dirp):
+
+mkdir()
+rmdir()
+chdir()
+getcwd() --获取当前工作目录对应的绝对路径
+
+变成实现函数generator_id()，要求每次运行都可以打印一个整数值，并且自动递增。
+
+
+
+

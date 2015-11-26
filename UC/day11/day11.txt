@@ -1,0 +1,149 @@
+
+
+SIG_ERR 是指针类型
+
+1.1信号集的概念和基本操作
+(1)基本概念
+	信号集 - 表示由多个信号组成的集合
+
+sigset_t 类型
+typedef struct{
+	unsigned long int __val[(1024/(8*sizeof(unsigned long int)))];
+}__sigset_t;
+
+typedef __sigset_t sigset_t
+
+sigemptyset();
+sigfillset();
+sigaddset();
+sigdelset();
+sigismenber();
+
+(2)sigprocmask
+int sigprocmask(int how,const sigset_t* set,sigset_t *oldset);
+如何屏蔽，最新的屏蔽信号集，之前的旧的屏蔽信号集。
+
+SIG_BLOCK 
+SIG_UNBLOCK
+SIG_SETMASK
+
+所谓的信号屏蔽并不是删除信号，而是将信号屏蔽期间来过的信号暂时保存起来，等信号接触屏蔽之后再进行处理:
+一般来说，信号屏蔽使用完毕后应该回复系统默认的信号屏蔽，也就是解除信号的屏蔽。
+
+(3)sigpending
+用sigpending函数获取信号屏蔽期间来过的信号
+
+
+(4)sigaction
+检查/更改对信号的处理方式，signal函数的增强版
+int sigaction(int signum,const struct sigaction* act,struct sigaction* oldact);
+
+struct sigaction{
+	void (*sa_handler)(int);//处理方式
+	void (*sa_sigaction)(int,siginfo_t*,void*);//设置信号的信号的处理方式
+	sigset_t sa_mask;//在处理中断的期间对后续信号进行屏蔽
+	int sa_flags;//选择信号的处理方式：SA_SIGINFO表示采用第二个函数处理信号
+	void (*sa_restorer)(void);//保留成员，不使用
+}
+
+自动屏蔽与正在处理信号相同的信号，如果在sa_flags中设置了SA_NODEFER表示解除对相同信号的屏蔽
+SA_RESETHAND表示信号处理函数被调用之后，恢复默认的处理方式(一次性处理)。
+
+strcut siginfo_t{
+	pid_t si_pid;//发送信号的进程号
+	sigval_t si_value;//发送信号时伴随的附加数据
+	...
+}
+
+
+int sigqueue(pid_t pid,int sig,const union sigval value);
+进程号，信号值，联合类型的附加数据;向指定进程发送信号并附带数据。
+
+
+计时器
+真实计时器，虚拟计时器，实用计时器
+
+#include <sys/time.h>
+
+int getitimer(int which, struct itimerval *curr_value);
+int setitimer(int which, const struct itimerval *new_value,
+		struct itimerval *old_value);
+
+
+真实计时器：ITIMER_REAL 以在系统中消耗的真实时间来计算，传递SIGALRM信号进行工作
+虚拟计时器：ITIMER_VIRTUAL 以在用户态下消耗的时间来计算，传递SIGVTALRM信号进行工作
+实用计时器：ITIMER_PROF 以在用户态和内核态下消耗的总时间，传递SIGPROF信号进行工作
+
+取消计时器，将it_interval设置为0；
+
+
+struct itimerval {
+	struct timeval it_interval; /* next value 间隔时间*/
+	struct timeval it_value;    /* current value 启动时间 */
+};
+struct timeval {
+	long tv_sec;                /* seconds 秒 */
+	long tv_usec;               /* microseconds 微秒 */
+};
+
+
+
+
+2.进程间的通信，
+2.1基本概念
+两个/多个进程之间有交流
+2.2通信的主要方式
+(1)文件
+(2)信号
+(3)管道
+(4)共享内存
+(5)消息队列 -- 重点
+(6)信号量集
+(7)网络通信 -- 重点
+...
+
+其中4,5,6 统称为 XSI IPC 通信
+(x/open system interface inter-process commnication)
+
+
+3.使用管道实现进程间的通信(了解)
+3.1基本概念和分类
+管道本质上还是文件，只不过是特殊的文件
+分类：有名管道，无名管道
+有名管道主要用于任意两个进程间的通信
+父子管道只能用于父子进程之间的通信(在一个程序中)
+
+
+3.2
+创建有名管道
+mkfifo a.pipe 是一种特殊的文件叫做管道，文件类型为p,创建管道文件必须使用mkfifo指令
+灰色的阴性表示不可用
+
+echo hello > a.pipe
+cat a.pipe -- 在另外一个终端中执行
+
+
+管道文件的特殊性:管道本身不能记录数据，而仅仅作为数据的通道而已
+
+#include<unistd.h>
+int pipe(int pipefd[2]);
+pipefd[0] -- 读端
+pipefd[1] -- 写端
+
+
+4.使用消息队列实现进程间的通信
+4.1 基本概念
+ 本质就是将交互的数据打包车成消息，然后放到消息队列中，使用其他进程负责读取，实现通信。
+
+4.2 使用消息队列通信的基本类型
+(1)获取key值，使用ftok函数
+(2)创建/获取消息队列，使用msgget
+(3)发送/接受消息队列中消息，使用msgsnd/msgrcv函数
+(4)如果不再使用，则删除消息队列，使用msgctl函数
+
+
+明日预报
+
+(1)消息队列的通信
+(2)综合小项目：银行账户的管理系统
+	需要用到：文件操作，信号处理，多进程，消息队列

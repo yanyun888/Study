@@ -1,0 +1,151 @@
+
+
+1.1关于进程管理的其他函数
+(1)vfork
+create a child process and block parent
+
+vfork函数的功能和fork函数类似，详细信息及返回值等参考fork函数即可，
+所不同的是vfork函数创建子进程时并不会复制父进程的内存区域，而是直接占用，导致父进程被挂起，这样
+能够保证子进程优先于父进程执行。
+直到子进程的终止或者调用exec系列函数时，父进程的挂起才会结束,子进程的终止应该去调用_exit(),而
+不建议用return和exit()来结束(防止这类结束有善后功能进行，会破坏数据区)
+
+(2)exec函数
+
+int execl(const char *path,const char* arg,...);
+第一个参数：执行文件的路径
+第二个参数：执行的参数，一般给执行方式
+第三个参数：可变长参数，使用NULL表示结尾
+函数功能：主要用于执行指定的文件
+
+使用execl执行ls -l命令
+execl("/bin/ls","./ls","-l",NULL );
+
+注意vfork本身没有太大的实际意义，一般与exec系列的函数搭配使用，让子进程跳转出去，执行一个全新的程序，变成一个全新
+的进程(和原进程解除了父子关系)。从而解除父进程的阻塞，实现并发的效果。
+fork也可以与exec搭配使用，但是一般很少使用，因为fork会拷贝父进程的内存区域。
+
+
+(3)system函数 -- 标C提供的函数
+
+int system(const char *command);
+
+编写shell脚本的流程
+.sh 文件 增加shell的执行权限 执行shell脚本
+
+
+
+2.中断的概念
+中断 -- 表示暂时停止当前的进程，转而执行其他的进程，或处理意外的情况。
+
+硬件分为硬件中断和软件中断
+
+3.信号的概念和处理
+3.1基本概念和基本特点
+(1)基本概念
+信号本质上是一个软中断，可以用作两个进程之间通信
+ctrl + c 本质上就是一个信号
+(2)基本特点
+a.信号是异步的，进程不知道信号何时会到达
+b.进程既可以处理信号，又可以发送信号
+c.每个信号都有一个名称，使用SIG开头
+
+3.2基本命令和分类
+(1)基本命令
+kill -l
+一般来说linux系统有62个信号，信号的方式
+
+要求掌握的信号：
+SIGINT 2 采用 ctrl+c产生该信号 终止进程
+SIGQUIT 3 采用ctrl+\产生该信号 终止进程
+SIGKILL 9 采用kill -9产生信号  终止进程
+
+(2)信号的分类
+一般来说，linux支持的信号是1~64，其中
+1~31叫做不可靠信号，不支持排队，信号可能产生丢失
+34~64之间的信号叫做可靠信号，支持排队，信号不会丢失
+
+
+3.3信号的处理方式
+(1)默认处理
+--绝大多数信号的处理方式都是终止进程
+(2)忽略处理
+--
+(3)自定义处理
+
+注意
+a.信号9不能进行忽略处理，也不能进行自定义处理，只能进行默认处理
+b.信号的处理受到用户权限的限制，也就是每个用户只能处理自己的信号，
+	而root用户可以处理所有信号。
+
+3.4信号的处理函数
+#include <signal.h>
+typedef void (*sighandler_t)(int);
+sighandler_t signal(int signum, sighandler_t handler);
+
+函数原型的解析
+typedef void (*sighandler_t)(int);
+==>typedef void (*)(int) sighandler_t  ;
+
+void (*)(int) signal(int signum, void (*)(int) handler );
+
+void (* signal(int signum,void(*)(int) handler) ) (int);
+
+#defint arr int[10] 
+
+第一个参数：需要处理的信号
+第二个参数：处理信号的方式，SIG_IGN,SIG_DFL,自定义函数的地址
+返回值，成功返回之前的处理方式，失败返回SIG_ERR
+函数功能：主要用于设置具体信号的的处理方式。
+
+3.5父子进程对信号处理的比较
+(1)对于fork函数创建的子进程来说，完全照搬附近车功能对信号的处理方式。
+
+(2)对于exec系列函数启动的进程来说，父进程忽略处理，子进程也忽略；父进程默认处理，父进程自定义处
+理时，子进程进行默认处理。
+
+3.6发送信号的方式
+(1)采用键盘发送信号(只能发送部分特殊信号)
+	ctrl+c发送信号2，SIGINT信号
+(2)程序出错发送信号(只能发送部分特殊信号)
+	段错误 发送信号11，SIGSEGV信号
+(3)使用kill命令来发送信号(可以发送所有信号)
+	kill -信号值 进程号
+(4)采用系统函数来发送信号
+	kill()/raise()/alarm()/sigqueue()
+
+#include<sys/types.h>
+#include<signal.h>
+int kill(int pid,int signo);
+>0 - 表示给进程号为pid的进程发送信号
+0 - 表示给和正在调用进车功能在同一个进程组的每一个进程发信号
+-1 - 表示给正在点用进程拥有发送权限的每一个进程发送信号
+<-1 - 表示发送给进程组id给pid的每一个进程
+
+signo
+0 - 表示不会发送信号，只是检查进程组是否存在
+
+#include<signal.h>
+int raise(int sig);
+函数功能：用于给调用这发送参数指定的信号。
+
+#include <unistd.h>
+unsigned int sleep(unsigned int seconds);
+使正在调用的线程进入睡眠状态，直到参数制定的秒数过去了，或者到达了一个不能被忽略的信号打断，此时睡眠结束。
+返回剩余需要睡眠的秒数。
+
+#include<unistd.h>
+unsigned int alarm(unsigned int seconds);
+倒数seconds后给正在调用的进程发送SIGALRM信号
+返回是上个闹钟的剩余秒数，返回0表示之前没有闹钟
+alarm(0); -- 表示取消闹钟
+
+sigqueue
+
+
+时间片轮转法
+
+明日预报
+sigaction函数
+
+
